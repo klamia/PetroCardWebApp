@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+	<persistence-unit name="PetroCardWebApp" transaction-type="RESOURCE_LOCAL">
+		<class>dz.com.naftal.petrocard.model.BcChargRech</class>
+		<class>dz.com.naftal.petrocard.model.Carte</class>
+		<class>dz.com.naftal.petrocard.model.Client</class>
+		<class>dz.com.naftal.petrocard.model.Commande</class>
+		<class>dz.com.naftal.petrocard.model.Contrat</class>
+		<class>dz.com.naftal.petrocard.model.DemandeAcquisition</class>
+		<class>dz.com.naftal.petrocard.model.DemandeBlocage</class>
+		<class>dz.com.naftal.petrocard.model.DemandeRemplacement</class>
+		<class>dz.com.naftal.petrocard.model.Document</class>
+		<class>dz.com.naftal.petrocard.model.EtatCarte</class>
+		<class>dz.com.naftal.petrocard.model.StationService</class>
+		<class>dz.com.naftal.petrocard.model.TypeCarte</class>
+		<class>dz.com.naftal.petrocard.model.TypeEtat</class>
+		<class>dz.com.naftal.petrocard.security.User</class>
+		<class>dz.com.naftal.petrocard.model.Vehicule</class>
+		<class>dz.com.naftal.petrocard.model.Ident</class>
+		<class>dz.com.naftal.petrocard.security.Role</class>
+		<class>dz.com.naftal.petrocard.model.Acteur</class>
+		<class>dz.com.naftal.petrocard.model.Structure</class>
+		<class>dz.com.naftal.petrocard.model.Employedemandeur</class>
+	</persistence-unit>
+</persistence>

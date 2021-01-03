@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<f:view contentType="text/html" id="fview">
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>PetroCard Web Application</title>
+  
+    <ui:debug />
+    <f:metadata>
+        <ui:insert name="metadata" />
+    </f:metadata>
+
+    <h:head>
+  
+  <link type="text/css" rel="stylesheet"
+	href="#{request.contextPath}/css/common.css" /> 
+	
+    <p:layout styleClass="layout" fullPage="true" resizeTitle="resize" >
+        <p:layoutUnit position="north" styleClass="ui-layout-unit-top">
+            <ui:include src="header.xhtml" />
+   </p:layoutUnit>
+
+       
+ <p:layoutUnit position="west" size="320" >  
+  
+         <div class ="leftmenu" >
+          <p:button outcome="home" value="Page d'accueil"  style="width:130px;"/>
+                <p:spacer width="10" height="10" />
+                <p:commandButton value="Deconnexion" action="#{logoutBean.logout}"  style="width:130px;"/>
+                 
+                 
+           <p:graphicImage height="620" width="310" value="/images/carteapuce2.jpg" />   
+        <ui:insert name="sidemenu">
+                <h:form>
+                         
+                         
+                         
+                         <h:commandLink value="Home"></h:commandLink>
+                         <br />
+                         <br />
+                         <h:commandLink value="News"></h:commandLink>
+                         <br />
+                         <br />
+                         <h:commandLink value="Articles"></h:commandLink>
+                         <br />
+                         <br />
+                         <h:commandLink value="About Us"></h:commandLink>
+                         <br />
+                         <br />
+                         
+                 </h:form>
+                 </ui:insert>
+                  </div>
+    </p:layoutUnit> 
+       
+        <p:layoutUnit styleClass="layoutUnitCenter" position="center">
+           
+             
+             
+             <ui:insert name="content" />
+           
+				
+        </p:layoutUnit>
+
+        
+
+        <p:layoutUnit position="south" resizable="true" id="south" styleClass="ui-layout-unit-bottom" >
+            <ui:include src="footer.xhtml" />
+        </p:layoutUnit>
+    </p:layout>
+
+</h:head>
+    
+
+    <h:body >
+    </h:body>
+
+</f:view>
+</html>

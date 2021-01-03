@@ -1,0 +1,445 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags"
+    template="/WEB-INF/templates/templateprincipale.xhtml">
+	
+<ui:define name="sidemenu" >
+                
+                <h:form>
+                <div></div>      
+                        
+                 </h:form>  
+</ui:define>
+
+
+<ui:define name="content">
+
+<p:tabView id="tabcartview" dynamic="true" style="width:auto; height:99%; margin:0px; padding:0px;" >
+   
+
+<p:tab title="Modifier Carte" >
+
+ <h:form id="ListeCarte">
+         
+            <p:growl id="growl" showDetail="true" sticky="false"  />
+            <p:dataTable var="carte" value="#{carteBean.listcarte}" id="tablecarte" widgetVar="CarteTable" styleClass ="table2"  border="0" cellpadding="2" cellspacing="0"
+                         emptyMessage="Carte non trouvé" paginator="true" rows="5" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" style="width:auto; font-size:13px;margin-left:50px !important; margin-top:10px !important;" >
+ 
+                <f:facet name="header">
+                <p Class="tableheader"> <span>Liste Des Cartes </span></p>
+                </f:facet>
+                
+                
+                <p:column  >
+                    <p:commandButton id="editer" rendered="#{sec:areAllGranted('ROLE_ADMIN')}" update=":tabcartview:Actualise:displaye" icon="ui-icon-arrowrefresh-1-w" 
+                    action="#{carteBean.editCarte(carte)}" oncomplete="cartEdit.show()" title="Editer"/>
+                </p:column>
+                
+                <p:column headerText="Num Carte" id="cartenum" filterBy="#{carte.numcarte}" filterMatchMode="exact" >
+                    <h:outputText value="#{carte.numcarte}" />
+                </p:column>
+                
+                 <p:column headerText="Type Carte" id="carteType">
+                    <h:outputText value="#{carte.commande.demandeAcquisition.typeCarte.intitule}" />
+                </p:column>
+                
+                <p:column headerText="Date Expiration" id="datexp" >
+                    <h:outputText value="#{carte.date_exp}" />
+                </p:column>
+                
+                <p:column headerText="Nom Proprietaire" id="NomProprietaire"   >
+                    <h:outputText value="#{carte.porteur.nomporteur}" />
+                </p:column>
+                
+                <p:column headerText="Nom Embosse" id="NomEmbosse"  >
+                    <h:outputText value="#{carte.porteur.nomembosse}" />
+                </p:column>
+                
+                </p:dataTable>
+        
+      </h:form>    
+     
+<h:form id="Actualise">
+            <p:dialog header="Modification Carte" widgetVar="cartEdit" resizable="false" id="editCart">
+                <p:growl id="growl" showDetail="true" sticky="false" />
+                <h:panelGrid id="displaye" columns="2" cellpadding="4" style="margin:0 auto;">
+ 
+                    <f:facet name="header">
+                        
+                    </f:facet>
+ 
+ 
+                       <h:outputLabel for="numeroCarte" title="NumeroCarte" value="Numero Carte"
+											style="color: #336699; font-weight:bold;" />
+					<p:inputText value="#{carteBean.editedCarte.numcarte}" id="numeroCarte" label="numeroCarte" />
+						
+ 
+                    <h:outputLabel for="dateexp" title="DateExpiration" value="Date Expiration"
+											style="color: #336699; font-weight:bold;" />
+					<p:calendar id= "dateexp" widgetVar="myCalendar"
+						value="#{carteBean.editedCarte.date_exp}" 
+						pattern="dd/MM/yyyy" label="dateexp" required="true" />						
+					
+					<h:outputText style="color: #336699; font-weight:bold;"
+						value="Nom Proprietaire:" />
+					<p:selectOneMenu value="#{carteBean.editedCarte.porteur}"  converter="#{porteurConverter}"
+					 panelStyle="width:150px" effect="fade"
+					 style="width:160px" filter="true"
+						filterMatchMode="startsWith">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						<f:selectItems value="#{autoCompleteBean.selectItemIdent}"/>
+					</p:selectOneMenu>
+					
+					<h:outputText style="color: #336699; font-weight:bold;"
+						value="Nom Embossé:" />
+					<p:selectOneMenu value="#{carteBean.editedCarte.porteur}" converter="#{porteurConverter}"
+					 panelStyle="width:150px" effect="fade"
+					 style="width:160px" filter="true"
+						filterMatchMode="startsWith">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						<f:selectItems value="#{autoCompleteBean.selectItemIdent2}"/>
+					</p:selectOneMenu>
+		
+		<script type="text/javascript">
+     jQuery(document).ready(function(){
+    	myCalendar.jqEl.datepicker("option", "minDate", +0);//set minDate to today 
+        myCalendar.jqEl.datepicker("option", "maxDate", +730);
+     });     
+        </script>
+		
+                </h:panelGrid>
+                <p:separator/>
+                <br/>
+                <p:commandButton value="Enregistrer" update=":tabcartview:ListeCarte:tablecarte, growl" action="#{carteBean.updateCarte}" oncomplete="cartEdit.hide()"/>
+            </p:dialog>
+         </h:form>
+     
+         
+</p:tab>
+
+
+
+<p:tab title="Générer Fichier Carte" >
+
+<h:form id="FichierCarteConfectionnée">
+           
+            <p:dataTable  styleClass ="table4"  var="carte" value="#{carteBean.listcarte}" id="tab" widgetVar="CarteTable" 
+                         paginator="true" rows="7" >
+
+                <f:facet name="header">
+                 <p Class="tableheader"> <span>Liste Cartes Confectionnées</span></p>
+                  <h:panelGrid columns="2">  
+    <p:panel header="Exporter Liste en Document">  
+        <h:commandLink>  
+            <p:graphicImage value="/images/excel.png" />  
+            <p:dataExporter type="xls" target="tab" fileName="ListeCartesConfectionnées"/>  
+        </h:commandLink>  
+  
+        <h:commandLink>  
+            <p:graphicImage value="/images/pdf.png" />  
+            <p:dataExporter type="pdf" target="tab" fileName="ListeCartesConfectionnées" preProcessor="#{carteBean.preProcessPDFCarte}"/>  
+        </h:commandLink>
+        
+         </p:panel>
+    <p:panel header="Envoyer Liste exportée par email">  
+       <p:commandButton   value="Email" icon="ui-icon-extlink" actionListener="#{dialogBean.emailDialog}" />  
+          
+    </p:panel>
+    
+  </h:panelGrid> 
+  
+                </f:facet>
+ 
+              <p:column styleClass="columntext" filterBy="#{carte.numcarte}" filterMatchMode="exact">
+              <f:facet name="header" >
+              <h:outputText value="Numero Carte" />
+              </f:facet>
+                    <h:outputText value="#{carte.numcarte}" />
+              </p:column>      
+              
+              
+              <p:column styleClass="columntext" filterBy="#{carte.commande.demandeAcquisition.typeCarte.intitule}" filterMatchMode="exact">
+              <f:facet name="header" >
+              <h:outputText value="Type Carte" />
+              </f:facet>
+                    <h:outputText value="#{carte.commande.demandeAcquisition.typeCarte.intitule}" />
+              </p:column> 
+                
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Date Expiration" />
+              </f:facet>
+                    <h:outputText value="#{carte.date_exp}" />
+              </p:column>
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Nom Propriétaire" />
+              </f:facet>
+                    <h:outputText value="#{carte.porteur.nomporteur}" />
+              </p:column>
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Nom Embosse" />
+              </f:facet>
+                    <h:outputText value="#{carte.porteur.nomembosse}" />
+              </p:column>
+
+            </p:dataTable>
+
+  </h:form>      
+
+</p:tab>
+
+<p:tab title="Mettre a jours Etat Carte">
+<h:form id="CarteListe">
+<p:growl id="growl" showDetail="true" sticky="false"  />
+            <p:dataTable var="carte" value="#{carteBean.listcarte}" id="table7" widgetVar="CarteTable1" styleClass ="table4"
+                         emptyMessage="Carte non trouvé" paginator="true" rows="7" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" >
+ 
+                <f:facet name="header">
+                <p Class="tableheader"> <span>Liste Carte</span></p>
+                    <p:outputPanel>
+                        <h:outputText value="Recherche:" />
+                        <p:inputText id="globalFilter" onkeyup="CarteTable1.filter()" style="width:80px" />
+                    </p:outputPanel>
+                </f:facet>
+
+              <p:column headerText="Num Carte"  filterBy="#{carte.numcarte}" filterMatchMode="exact" >
+                    <h:outputText value="#{carte.numcarte}" />
+                </p:column>
+                <p:column headerText="Type Carte"  >
+                    <h:outputText value="#{carte.commande.demandeAcquisition.typeCarte.intitule}" />
+                </p:column>
+                
+                <p:column style="width:8%">
+                    <p:commandButton  value="MAJ Etat"  update=":tabcartview:FormulaireAjoutEtat:displayeconf"
+                    action="#{etatCarteBean.addEtatCarte(carte)}" oncomplete="Mconf.show()" title="mettre a jour"/>
+                </p:column>
+                
+            </p:dataTable>
+        </h:form>
+ 
+ <h:form id="FormulaireAjoutEtat">
+               
+            
+            
+            <p:dialog id="ajoutEtatConf" header="Mettre a Jour Etat Carte" widgetVar="Mconf" resizable="false" >
+                <p:growl id="growl" showDetail="true" sticky="false" />
+                <h:panelGrid id="displayeconf" columns="2" cellpadding="4" style="margin:0 auto;" >
+ 
+                    <h:outputLabel for="numCarte1" title="NumeroCarte"
+						value="Numero Carte:"
+						style="color: #336699; font-weight:bold;" />
+					<p:inputText
+						value="#{etatCarteBean.etatcarte.carte.numcarte}"
+						id="numCarte1" />
+						
+					<h:outputLabel for="typeCarte1" title="TypeCarte"
+						value="Type Carte:"
+						style="color: #336699; font-weight:bold;" />
+					<p:inputText
+						value="#{etatCarteBean.etatcarte.carte.commande.demandeAcquisition.typeCarte.intitule}"
+						id="typeCarte1" />	
+                    
+                    <h:outputLabel for="etat1" title="EtatCarte" value="Etat Carte:" style="color: black; font-size:13px; font-weight:bold;" /> 
+                    <p:selectOneMenu id="etat1" value="#{etatCarteBean.etatcarte.typeEtat}" converter="#{typeEtatConverter}"
+					 panelStyle="width:150px" effect="fade"
+					 style="width:160px" filter="true"
+						filterMatchMode="startsWith" >
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						<f:selectItems value="#{autoCompleteBean.selectItemTypeEtat}"/>
+					</p:selectOneMenu>
+                    
+                    <h:outputLabel for="date1" title="DateMAJ" value="Date MAJ"
+						style="color: #336699; font-weight:bold;" />
+					<p:calendar widgetVar="myCalendar"
+						value="#{etatCarteBean.etatcarte.datetat}"
+						pattern="dd/MM/yyyy" label="date1" required="true" />
+
+                           <script type="text/javascript">
+                            jQuery(document).ready(function(){
+                             myCalendar.jqEl.datepicker("option", "maxDate", +0);//set maxDate to today
+                              });     
+                            </script>						
+                  
+                  </h:panelGrid>
+						
+					<f:facet name="footer">
+						<p:commandButton value="Enregistrer" update=" growl"
+							action="#{etatCarteBean.ajoutEtatCarte}"
+							oncomplete="Mconf.hide()" />
+						
+					</f:facet>
+				
+
+			</p:dialog>
+         </h:form>      
+ 
+
+
+</p:tab>
+
+<p:tab title="Consulter Liste Carte" >
+
+<p:tabView id="tabcartview2" dynamic="true" style="width:100%; height:570px; margin:0px; ">
+<p:tab title="Liste Carte par Commande" >
+
+<h:form id="ListeCarteParCommande">
+           
+            <p:dataTable  styleClass ="table4"  var="commande" value="#{commandeBean.listCommande}" id="tabComCart" widgetVar="CommandeTable" 
+                         paginator="true" rows="7" >
+
+                <f:facet name="header">
+                 <p Class="tableheader"> <span>Liste Commande </span></p>
+                  
+                </f:facet>
+ 
+              <p:column styleClass="columntext" filterBy="#{commande.commandeid}" filterMatchMode="exact">
+              <f:facet name="header" >
+              <h:outputText value="Numero Commande" />
+              </f:facet>
+                    <h:outputText value="#{commande.commandeid}" />
+              </p:column>
+                
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Date Commande" />
+              </f:facet>
+                    <h:outputText value="#{commande.datecmd}" />
+              </p:column>
+              
+              <p:column  >
+                    <p:commandButton id="voir" icon="ui-icon-search" update=":tabcartview:tabcartview2:Aperçu:displayeee" action="#{commandeBean.voirCommande(commande)}" 
+                    oncomplete="cartApercu.show()" title="Aperçu"/>
+                   
+                </p:column>
+
+            </p:dataTable>
+
+  </h:form>
+  
+<h:form id="Aperçu">
+            <p:dialog header="Aperçu Commande" widgetVar="cartApercu" resizable="false" id="apercuCom">
+                
+                <h:panelGrid id="displayeee" columns="2" cellpadding="8" style="margin:0 auto;">
+ 
+                    <f:facet name="header"> 
+                    </f:facet>
+                    
+                    <h:outputLabel for="numCom" title="NumeroCommande"
+						value="Numero Commande:"
+						style="color: black; font-weight:bold;" />
+					<h:outputText
+						value="#{commandeBean.commandeEnCours.commandeid}"
+						id="numCom" style="color: #336699; font-weight:bold;" />
+					
+						
+                    <h:outputLabel for="dateCMD" title="Date Commande"
+						value="Date Commande:"
+						style="color: black; font-weight:bold;" />
+					<h:outputText
+						value="#{commandeBean.commandeEnCours.datecmd}"
+						id="dateCMD" style="color: #336699; font-weight:bold;" />
+	 
+				 <h:outputLabel for="listecarte" title="ListeCarte" style="color: black; font-weight:bold;"
+						value="Liste Carte:" /> 
+			<h:panelGroup>	
+             <p:dataTable var="carte" id="tabComCart" value="#{commandeBean.commandeEnCours.cartes}" emptyMessage="pas de carte encore pour cette commande" >
+                  
+                  <f:facet name="header">
+                 <p Class="tableheader"> <span>Liste Cartes Confectionnées Par Commande</span></p>
+                  <h:panelGrid columns="2">  
+                   <p:panel header="Exporter Liste en Document">  
+                  <h:commandLink>  
+                     <p:graphicImage value="/images/excel.png" />  
+                     <p:dataExporter type="xls" target="tabComCart" fileName="ListeCarteConfectionnéesParCommande"/>  
+                  </h:commandLink>  
+  
+                  <h:commandLink>  
+                       <p:graphicImage value="/images/pdf.png" />  
+                     <p:dataExporter type="pdf" target="tabComCart" fileName="ListeCarteConfectionnéesParCommande" preProcessor="#{carteBean.preProcessPDFCarteCommande}"/>  
+                 </h:commandLink>  
+                  </p:panel>
+    
+             </h:panelGrid> 
+                </f:facet>
+                  <br/>
+                  
+                  <p:column styleClass="columntext">
+                  <f:facet name="header" >
+                       <h:outputText value="Numero Carte" />
+                   </f:facet>
+                  <h:outputText value="#{carte.numcarte}" />
+                   </p:column>
+                   
+                  <p:column styleClass="columntext">
+                  <f:facet name="header" >
+                       <h:outputText value="Type Carte" />
+                   </f:facet>
+                  <h:outputText value="#{carte.commande.demandeAcquisition.typeCarte.intitule}" />
+                   </p:column>
+                
+                <p:column styleClass="columntext">
+                <f:facet name="header" >
+                       <h:outputText value="date Expiration" />
+                   </f:facet>
+                <h:outputText value="#{carte.date_exp}" />
+                 </p:column>
+ 
+                  <p:column styleClass="columntext">
+                  <f:facet name="header" >
+                       <h:outputText value="Nom Propriétaire" />
+                   </f:facet>
+                   <h:outputText value="#{carte.porteur.nomporteur}" />
+                  </p:column>
+                    
+                   <p:column styleClass="columntext">
+                   <f:facet name="header" >
+                       <h:outputText value="Nom Embossé" />
+                   </f:facet>
+                   <h:outputText value="#{carte.porteur.nomembosse}" />
+                  </p:column>
+                  
+                  <p:column styleClass="columntext">
+                  <f:facet name="header" >
+                       <h:outputText value="Num Commande" />
+                   </f:facet>
+                    <h:outputText value="#{carte.commande.commandeid}" />
+                   </p:column>
+              </p:dataTable>
+               </h:panelGroup> 
+                
+                
+                
+                
+                </h:panelGrid>
+                 
+                 </p:dialog>
+         </h:form>            
+
+</p:tab>
+
+<p:tab title="Liste Carte Confectionnées" >
+
+
+
+
+</p:tab>
+
+
+</p:tabView>
+</p:tab>
+</p:tabView>
+</ui:define>
+
+
+</ui:composition>
+            

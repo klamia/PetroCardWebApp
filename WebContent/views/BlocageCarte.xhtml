@@ -1,0 +1,629 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags"
+    template="/WEB-INF/templates/templateprincipale.xhtml">
+	
+<ui:define name="sidemenu" >
+                
+                <h:form>
+                <div></div>      
+                        
+                 </h:form>  
+</ui:define>
+
+
+<ui:define name="content">
+<p:tabView id="tablocageview" dynamic="true" style="width:auto; height:99%; margin:0px; padding:0px;" >
+<p:tab title="Gestion Demande Blocage Carte" >
+  
+<h:form id="AjoutDB">
+           <p:commandButton value="Ajouter une Demande" style="margin-top:20px; " icon="ui-icon-adds" 
+           action="#{blocageBean.addDemandeBlocage}"  oncomplete="demBAjout.show()"/> 
+        </h:form>
+     
+<h:form id="ListeDemandeB">
+         
+            <p:growl id="growl" showDetail="true" sticky="false"  />
+            <p:dataTable var="demandeblocage" value="#{blocageBean.listDemandeBlocage}" id="tableB" widgetVar="DemandeBTable" styleClass ="table2"  border="0" cellpadding="2" cellspacing="0"
+                         emptyMessage="Aucune demande a afficher" paginator="true" rows="5" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" style="width:auto; font-size:13px;margin-left:50px !important; margin-top:10px !important;" >
+ 
+                <f:facet name="header">
+                <p Class="tableheader"> <span>Liste Des Demandes Blocage Carte </span></p>
+                </f:facet>
+                
+                
+                <p:column  >
+                    <p:commandButton id="voirB" icon="ui-icon-search" 
+                     action="#{blocageBean.voirDemandeBlocage(demandeblocage)}" update=":tablocageview:AperçuB:displayeeeB"  oncomplete="demApercuB.show()" title="Aperçu"/>
+                    <p:spacer width="5" height="5" />
+                    <p:commandButton id="editerB" rendered="#{sec:areAllGranted('ROLE_ADMIN')}"  update=":tablocageview:ActualiseB:displayeB" icon="ui-icon-arrowrefresh-1-w" 
+                    action="#{blocageBean.editDemandeBlocage(demandeblocage)}" oncomplete="demEditB.show()" title="Editer"/>
+                    <p:spacer width="5" height="5" />
+                    <p:commandButton id="supprimerDB" rendered="#{sec:areAllGranted('ROLE_ADMIN')}" 
+                       icon="ui-icon-trash"  action="#{blocageBean.supprimeDemandeBlocage(demandeblocage)}" oncomplete="confirmation.show()" title="Supprimer"/> 
+                </p:column>
+                
+                <p:column headerText="Num Demande" id="numDemB" filterBy="#{demandeblocage.demandeblocageid}" filterMatchMode="exact" >
+                    <h:outputText value="#{demandeblocage.demandeblocageid}" />
+                </p:column>
+                
+                <p:column headerText="Num Carte" id="numCarteB" filterBy="#{demandeblocage.carte.numcarte}" filterMatchMode="exact" >
+                    <h:outputText value="#{demandeblocage.carte.numcarte}" />
+                </p:column>
+                
+                <p:column headerText="Type Carte" id="typeCB" >
+                    <h:outputText value="#{demandeblocage.carte.commande.demandeAcquisition.typeCarte.intitule}" />
+                </p:column>
+                
+                <p:column headerText="Date Demande" id="DateDemandeB"   >
+                    <h:outputText value="#{demandeblocage.datedemb}" />
+                </p:column>
+                
+                <p:column headerText="Client" id="clientB"  >
+                    <h:outputText value="#{demandeblocage.carte.commande.demandeAcquisition.client.raisonsocial}" />
+                </p:column>
+                
+                <p:column headerText="Type Blocage" id="typebl"  >
+                    <h:outputText value="#{demandeblocage.typeblocage}" />
+                </p:column>
+                
+               <p:column headerText="Motif Blocage" id="motifbl"  >
+                    <h:outputText value="#{demandeblocage.motifbloc}" />
+                </p:column> 
+                
+                <p:column headerText="Nom Utilisateur" id="utilisateurname"  >
+                    <h:outputText value="#{demandeblocage.user.nom}" />
+                </p:column> 
+                
+                <p:column headerText="Prenom Utilisateur" id="utilisateursurname"  >
+                    <h:outputText value="#{demandeblocage.user.prenom}" />
+                </p:column> 
+ 
+                </p:dataTable>
+</h:form>
+
+<h:form id="SupprimerB">
+           
+                <p:growl id="growl" showDetail="true" sticky="false" />
+                <p:confirmDialog  message="Voulez vous supprimer cette demande?" global="true"
+                 header="Confirmation de Suppression" severity="alert" widgetVar="confirmation" resizable="false" id="suprDB">
+                 <p:commandButton value="OK" icon="ui-icon-check" update=":tablocageview:ListeDemandeB:tableB, growl"  
+                 action="#{blocageBean.deleteDemandeBlocage}"  styleClass="ui-confirmdialog-yes" oncomplete="confirmation.hide()"/>
+                 <p:commandButton value="Annuler" icon="ui-icon-close" onclick="confirmation.hide()" type="button" />
+                 </p:confirmDialog>
+                 
+</h:form>
+
+<h:form id="FormulaireDemandeBlocage">
+			<p:dialog id="editB" header="Formulaire Demande Blocage Carte "
+				widgetVar="demBAjout" resizable="false">
+
+				<p:growl id="growl" showDetail="true" sticky="false" life="10000" />
+				<h:panelGrid id="displayB" columns="2" cellpadding="5">
+				
+				
+				<h:outputText style="color: #336699; font-weight:bold;"
+						value="Numero Carte:*" />
+					<p:selectOneMenu value="#{blocageBean.demandeblocage.carte}" converter="#{carteConverter}"
+					 panelStyle="width:150px" effect="fade"
+					 style="width:160px" filter="true"
+						filterMatchMode="startsWith">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						
+						<f:selectItems value="#{autoCompleteBean.selectItemCarte}"/>
+						 
+					</p:selectOneMenu>
+
+					<h:outputLabel for="date" title="DateDemande" value="Date Demande Blocage:* "
+						style="color: #336699; font-weight:bold;" />
+					<p:calendar widgetVar="myCalendar"
+						value="#{blocageBean.demandeblocage.datedemb}"
+						pattern="dd/MM/yyyy" label="date" required="true" />
+
+
+                    <h:outputLabel for="typeblo" title="TypeBlocage"
+						value="Type Blocage:*"
+						style="color: #336699; font-weight:bold;" /> 
+                    <p:selectOneMenu id="typeblo"
+                        value="#{blocageBean.demandeblocage.typeblocage}"
+                        style="width:200px; ">
+                        <f:selectItem itemLabel="--Select--" itemValue="none" />
+                        <f:selectItem itemLabel="Permanent"  itemValue="Permanent" />
+                        <f:selectItem itemLabel="Temporaire" itemValue="Temporaire"/>
+                    </p:selectOneMenu>
+
+
+                       <h:outputLabel for="motifblo" title="MotifBlocage"
+						value="Motif Blocage:*"
+						style="color: #336699; font-weight:bold;" />
+                    <p:inputTextarea id="motifblo"  value="#{blocageBean.demandeblocage.motifbloc}" style="width:300px; " 
+                    rows="6" cols="33" required="true" /> 
+
+
+                     <h:outputText style="color: #336699; font-weight:bold;"
+						value="User:" />
+					<p:selectOneMenu value="#{blocageBean.demandeblocage.user}" 
+					 panelStyle="width:150px" effect="fade"
+					 style="width:160px" filter="true"
+						filterMatchMode="startsWith">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						
+						<f:selectItems value=""/>
+						 
+					</p:selectOneMenu>
+
+
+                     <script type="text/javascript">
+                         jQuery(document).ready(function(){
+                         myCalendar.jqEl.datepicker("option", "maxDate", +0);//set maxDate to today
+                          });     
+                             </script>
+                    
+                  </h:panelGrid>
+                 <br/>
+                   <br/>
+                   
+					<f:facet name="footer">
+						<p:commandButton value="Enregistrer" update=":tablocageview:ListeDemandeB:tableB, growl"
+							action="#{blocageBean.ajoutDemandeBlocage}"
+							oncomplete="demBAjout.hide()" />
+						<p:spacer width="50" height="10" />
+						
+						<p:commandButton value="Annuler" update="editB" process="@none"
+							actionListener="#{blocageBean.reset}" />
+					</f:facet>
+				
+
+			</p:dialog>
+</h:form>
+<h:form id="ActualiseB">
+            <p:dialog header="Modification Demande Blocage" widgetVar="demEditB" resizable="false" id="editDemB">
+                <p:growl id="growl" showDetail="true" sticky="false" />
+                <h:panelGrid id="displayeB" columns="2" cellpadding="4" style="margin:0 auto;">
+ 
+                    <f:facet name="header">
+                        
+                    </f:facet>
+                    
+                    <h:outputText style="color: #336699; font-weight:bold;"
+						value="Numero Carte:*" />
+					<p:selectOneMenu value="#{blocageBean.editedDemandeBlocage.carte}" converter="#{carteConverter}"
+					 panelStyle="width:150px" effect="fade"
+					 style="width:160px" filter="true"
+						filterMatchMode="startsWith">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						
+						<f:selectItems value="#{autoCompleteBean.selectItemCarte}"/>
+						 
+					</p:selectOneMenu>
+
+					<h:outputLabel for="date" title="DateDemande" value="Date Demande Blocage:* "
+						style="color: #336699; font-weight:bold;" />
+					<p:calendar widgetVar="myCalendar"
+						value="#{blocageBean.editedDemandeBlocage.datedemb}"
+						pattern="dd/MM/yyyy" label="date" required="true" />
+
+
+                    <h:outputLabel for="typeblo" title="TypeBlocage"
+						value="Type Blocage:*"
+						style="color: #336699; font-weight:bold;" /> 
+                    <p:selectOneMenu id="typeblo"
+                        value="#{blocageBean.editedDemandeBlocage.typeblocage}"
+                        style="width:200px; ">
+                        <f:selectItem itemLabel="--Select--" itemValue="none" />
+                        <f:selectItem itemLabel="Permanent"  itemValue="Permanent" />
+                        <f:selectItem itemLabel="Temporaire" itemValue="Temporaire"/>
+                    </p:selectOneMenu>
+
+
+                       <h:outputLabel for="motifblo" title="MotifBlocage"
+						value="Motif Blocage:*"
+						style="color: #336699; font-weight:bold;" />
+                    <p:inputTextarea id="motifblo"  value="#{blocageBean.editedDemandeBlocage.motifbloc}" style="width:300px; " 
+                    rows="6" cols="33" required="true" /> 
+
+
+                     <h:outputText style="color: #336699; font-weight:bold;"
+						value="User:" />
+					<p:selectOneMenu value="#{blocageBean.editedDemandeBlocage.user}" 
+					 panelStyle="width:150px" effect="fade"
+					 style="width:160px" filter="true"
+						filterMatchMode="startsWith">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						
+						<f:selectItems value=""/>
+						 
+					</p:selectOneMenu>
+
+
+                     <script type="text/javascript">
+                         jQuery(document).ready(function(){
+                         myCalendar.jqEl.datepicker("option", "maxDate", +0);//set maxDate to today
+                          });     
+                             </script>
+                    
+                  </h:panelGrid>
+                  
+				
+                     <br/>
+                      <br/>
+                   
+					<f:facet name="footer">
+						<p:commandButton value="Enregistrer" update=":tablocageview:ListeDemandeB:tableB, growl"
+							action="#{blocageBean.updateDemandeBlocage}"
+							oncomplete="demEditB.hide()" />
+						<p:spacer width="50" height="10" />
+						
+						<p:commandButton value="Annuler" update="editDemB" process="@none"
+							actionListener="#{blocageBean.reset}" />
+					</f:facet>
+				
+
+			</p:dialog>
+</h:form>
+<h:form id="AperçuB">
+            <p:dialog header="Aperçu Demande Blocage" widgetVar="demApercuB" resizable="false" id="apercuDemB">
+                
+                <h:panelGrid id="displayeeeB" columns="2" cellpadding="8" style="margin:0 auto;">
+ 
+                    <f:facet name="header"> 
+                    </f:facet>
+                    
+                    <h:outputLabel for="numDemDB" title="NumeroDemande"
+						value="Numero Demande Blocage:"
+						style="color: black; font-weight:bold;" />
+					<h:outputText
+						value="#{blocageBean.demandeBlocageEnCours.demandeblocageid}"
+						id="numDemDB" style="color: #336699; font-weight:bold;" />
+					
+					<h:outputLabel for="dateDB" title="DateDemande" value="Date Demande:"
+						style="color: black; font-weight:bold;" />
+					<h:outputText
+						value="#{blocageBean.demandeBlocageEnCours.datedemb}"
+						id="dateDB" style="color: #336699; font-weight:bold;" /> 
+					
+                    <h:outputLabel for="numCarteDB" title="NumeroCarte"
+						value="Numero Carte:"
+						style="color: black; font-weight:bold;" />
+					<h:outputText
+						value="#{blocageBean.demandeBlocageEnCours.carte.numcarte}"
+						id="numCarteDB" style="color: #336699; font-weight:bold;" />
+						
+		
+                    <h:outputLabel for="typecarteDB" title="TypeCarte" style="color: black; font-weight:bold;"
+						value="Type Carte:" />
+					<h:outputText value="#{blocageBean.demandeBlocageEnCours.carte.commande.demandeAcquisition.typeCarte.intitule}" id="typecarteDB"  
+					style="color: #336699; font-weight:bold;" />
+	
+                    
+                    <h:outputLabel for="typblocage" title="TypeBlocage" value="Type Blocage"
+						style="color: black; font-weight:bold;" />
+					<h:outputText
+						value="#{blocageBean.demandeBlocageEnCours.typeblocage}"
+						id="typblocage" style="color: #336699; font-weight:bold;" /> 	
+						
+					<h:outputLabel for="mtblocage" title="MotifBlocage" value="Motif Blocage"
+						style="color: black; font-weight:bold;" />
+					<h:outputText
+						value="#{blocageBean.demandeBlocageEnCours.motifbloc}"
+						id="mtblocage" style="color: #336699; font-weight:bold;" /> 		
+				 
+				 <h:outputLabel for="clientDB" title="Client" style="color: black; font-weight:bold;" value="Client:" /> 
+                    <h:outputText value="#{blocageBean.demandeBlocageEnCours.carte.commande.demandeAcquisition.client.raisonsocial}" id="clientDB"  
+                    style="color: #336699; font-weight:bold;" />
+                    
+                    <h:outputLabel for="userDB" title="User" style="color: black; font-weight:bold;" value="User:" /> 
+                    <h:outputText value="#{blocageBean.demandeBlocageEnCours.user.nom}" id="userDB"  
+                    style="color: #336699; font-weight:bold;" />
+                    
+                   <h:outputLabel for="userDB2" title="User" style="color: black; font-weight:bold;" value="User:" /> 
+                    <h:outputText value="#{blocageBean.demandeBlocageEnCours.user.prenom}" id="userDB2"  
+                    style="color: #336699; font-weight:bold;" /> 
+				 
+                </h:panelGrid>
+                 
+                 </p:dialog>
+         </h:form>  
+                
+</p:tab>
+
+<p:tab title="Générer Fichier des cartes à bloquer" >       
+        
+ <h:form id="FichierDemandeBlocage">
+           
+            <p:dataTable  styleClass ="table4"  var="demandeblocage" value="#{blocageBean.listDemandeBlocage}" id="tab8" widgetVar="CommandeTable" 
+                         paginator="true" rows="10" >
+
+                <f:facet name="header">
+                 <p Class="tableheader"> <span>Liste Des Demandes Blocage Carte</span></p>
+                  <h:panelGrid columns="2">  
+    <p:panel header="Exporter Liste en Document">  
+        <h:commandLink>  
+            <p:graphicImage value="/images/excel.png" />  
+            <p:dataExporter type="xls" target="tab8" fileName="ListeDesDemandesBlocages"/>  
+        </h:commandLink>  
+  
+        <h:commandLink>  
+            <p:graphicImage value="/images/pdf.png" />  
+            <p:dataExporter type="pdf" target="tab8" fileName="ListeDesDemandesBlocages" preProcessor="#{blocageBean.preProcessPDF}"/>  
+        </h:commandLink>
+        
+         </p:panel>
+    <p:panel header="Envoyer Liste exportée par email">  
+       <p:commandButton   value="Email" icon="ui-icon-extlink" actionListener="#{dialogBean.emailDialog}" />  
+          
+    </p:panel>
+    
+  </h:panelGrid> 
+  
+                </f:facet>
+ 
+              <p:column styleClass="columntext" filterBy="#{demandeblocage.demandeblocageid}" filterMatchMode="exact">
+              <f:facet name="header" >
+              <h:outputText value="Num Demande" />
+              </f:facet>
+                    <h:outputText value="#{demandeblocage.demandeblocageid}" />
+              </p:column>
+                
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Num carte" />
+              </f:facet>
+                    <h:outputText value="#{demandeblocage.carte.numcarte}" />
+              </p:column>
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Type Blocage" />
+              </f:facet>
+                    <h:outputText value="#{demandeblocage.typeblocage}" />
+              </p:column>
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Motif Blocage" />
+              </f:facet>
+                    <h:outputText value="#{demandeblocage.motifbloc}" />
+              </p:column>
+             
+          
+            </p:dataTable>
+        
+      
+  </h:form>      
+</p:tab>       
+        
+<p:tab title="MAJ Etat Carte" >
+<h:form id="majEtatCarteB">
+<p:growl id="growl" showDetail="true" sticky="false"  />
+            <p:dataTable var="demandeblocage" value="#{blocageBean.listDemandeBlocageNonTraite}" id="table8" widgetVar="EtatTable" styleClass ="table4"
+                         emptyMessage="Carte non trouvé" paginator="true" rows="7" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" >
+ 
+                <f:facet name="header">
+                <p Class="tableheader"> <span>Liste Cartes A Bloquer </span></p>
+                    <p:outputPanel>
+                        <h:outputText value="Recherche:" />
+                        <p:inputText id="globalFilter" onkeyup="EtatTable.filter()" style="width:80px" />
+                    </p:outputPanel>
+                </f:facet>
+ 
+              <p:column headerText="ID Carte" id="carteId" filterBy="#{demandeblocage.carte.carteid}" filterMatchMode="exact" >
+                    <h:outputText value="#{demandeblocage.carte.carteid}" />
+                </p:column>
+                
+                <p:column headerText="Numero Carte" id="numCarte3" filterBy="#{demandeblocage.carte.numcarte}" filterMatchMode="exact" >
+                    <h:outputText value="#{demandeblocage.carte.numcarte}" />
+                </p:column>
+                
+                <p:column headerText="Num Demande" id="numdem"  >
+                    <h:outputText value="#{demandeblocage.demandeblocageid}" />
+                </p:column>
+                
+               
+                
+                <p:column style="width:8%">
+                    <p:commandButton id="majEtat" value="MAJ Etat"  update=":tablocageview:ActualiseBL:displayeBL"  action="#{etatCarteBean.addEtatCarteBloque(demandeblocage)}" oncomplete="etatCarteBloc.show()" title="mettre a jours"/>
+                </p:column>
+                
+            </p:dataTable>
+        </h:form>
+        
+        <h:form id="ActualiseBL">
+               
+            <p:dialog header="MAJ Etat Carte" widgetVar="etatCarteBloc" resizable="false" id="majEtatCharg"  >
+                <p:growl id="growl" showDetail="true" sticky="false" />
+                <h:panelGrid id="displayeBL" columns="2" cellpadding="4" style="margin:0 auto;">
+ 
+                    <f:facet name="header">
+                       
+                    </f:facet>
+ 
+ 
+                    <h:outputLabel for="numCarte1" title="IDCarte"
+						value="ID Carte:"
+						style="color: #336699; font-weight:bold;" />
+					<p:inputText
+						value="#{etatCarteBean.etatcarteB.carte.carteid}"
+						id="numCarte1" required="true"/>
+										 
+                    <h:outputLabel for="etat1" title="EtatCarte" value="Etat Carte:" style="color: black; font-size:13px; font-weight:bold;" /> 
+                    <p:selectOneMenu id="etat1" value="#{etatCarteBean.etatcarteB.typeEtat}" converter="#{typeEtatConverter}"
+					 panelStyle="width:150px" effect="fade" required="true"
+					 style="width:160px" filter="true"
+						filterMatchMode="startsWith" >
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						<f:selectItems value="#{autoCompleteBean.selectItemTypeEtat}"/>
+					</p:selectOneMenu>
+
+                    <h:outputLabel for="date1" title="DateMAJ" value="Date MAJ"
+						style="color: #336699; font-weight:bold;" />
+					<p:calendar widgetVar="myCalendar"
+						value="#{etatCarteBean.etatcarteB.datetat}"
+						pattern="dd/MM/yyyy" label="date1" required="true" />
+
+                           <script type="text/javascript">
+                            jQuery(document).ready(function(){
+                             myCalendar.jqEl.datepicker("option", "maxDate", +0);//set maxDate to today
+                              });     
+                            </script>						
+                  
+                  </h:panelGrid>
+						
+					<f:facet name="footer">
+						<p:commandButton value="Enregistrer" update=":tablocageview:majEtatCarteB:table8, growl"
+							action="#{etatCarteBean.ajoutEtatCarteB}"
+							oncomplete="etatCarteBloc.hide()" />
+						
+					</f:facet>
+				
+
+			</p:dialog>
+         </h:form> 
+
+</p:tab>        
+
+<p:tab title="Consultation" >
+<p:tabView id="soustablocageview" dynamic="true" style="width:100%; height:570px; margin:0px; " >
+<p:tab title="Consultation Liste carte à bloquer" >
+<h:form id="ConsultationListeCarteABloque">
+  <p:dataTable  styleClass ="table4"  var="demandeblocage" value="#{blocageBean.listDemandeBlocageNonTraite}" id="tab" widgetVar="EtatTable" 
+                         paginator="true" rows="10" >
+
+                <f:facet name="header">
+                 <p Class="tableheader"> <span>Liste Carte A Bloquer</span></p>
+                  <h:panelGrid columns="2">  
+    <p:panel header="Exporter Liste en Document">  
+        <h:commandLink>  
+            <p:graphicImage value="/images/excel.png" />  
+            <p:dataExporter type="xls" target="tab" fileName="ListeCarteABloque"/>  
+        </h:commandLink>  
+  
+        <h:commandLink>  
+            <p:graphicImage value="/images/pdf.png" />  
+            <p:dataExporter type="pdf" target="tab" fileName="ListeCarteABloque" preProcessor="#{blocageBean.preProcessPDF}"/>  
+        </h:commandLink>  
+          
+    </p:panel>
+    
+                 </h:panelGrid> 
+                  
+                </f:facet>
+ 
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Numero Demande" />
+              </f:facet>
+                    <h:outputText value="#{demandeblocage.demandeblocageid}" />
+              </p:column>
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Date Demande" />
+              </f:facet>
+                    <h:outputText value="#{demandeblocage.datedemb}" />
+              </p:column>
+              
+             <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Type Blocage" />
+              </f:facet>
+                    <h:outputText value="#{demandeblocage.typeblocage}" />
+              </p:column>
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="motif Blocage" />
+              </f:facet>
+                    <h:outputText value="#{demandeblocage.motifbloc}" />
+              </p:column>
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Numero Carte" />
+              </f:facet>
+                    <h:outputText value="#{demandeblocage.carte.numcarte}" />
+              </p:column>
+                
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Type Carte" />
+              </f:facet>
+                    <h:outputText value="#{demandeblocage.carte.commande.demandeAcquisition.typeCarte.intitule}" />
+              </p:column>
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Nom Porteur" />
+              </f:facet>
+                    <h:outputText value="#{demandeblocage.carte.porteur.nomporteur}" />
+              </p:column>
+              
+            </p:dataTable>
+</h:form> 
+</p:tab>
+<p:tab title="Consultation Liste carte bloquée" >
+<h:form id="affichageCarteBloque">
+            
+            <p:dataTable  styleClass ="table4"  var="etatcarte" value="#{etatCarteBean.listetatCarteBloque}" id="tab" widgetVar="EtatTable" 
+                         paginator="true" rows="10" >
+
+                <f:facet name="header">
+                 <p Class="tableheader"> <span>Liste Carte Active</span></p>
+                  <h:panelGrid columns="2">  
+    <p:panel header="Exporter Liste en Document">  
+        <h:commandLink>  
+            <p:graphicImage value="/images/excel.png" />  
+            <p:dataExporter type="xls" target="tab" fileName="ListeCarteBloquée"/>  
+        </h:commandLink>  
+  
+        <h:commandLink>  
+            <p:graphicImage value="/images/pdf.png" />  
+            <p:dataExporter type="pdf" target="tab" fileName="ListeCarteBloquée" preProcessor="#{etatCarteBean.preProcessPDFCarteBloque}"/>  
+        </h:commandLink>  
+          
+    </p:panel>
+    
+                 </h:panelGrid> 
+                  
+                </f:facet>
+ 
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Numero Carte" />
+              </f:facet>
+                    <h:outputText value="#{etatcarte.carte.carteid}" />
+              </p:column>
+                
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Etat Carte" />
+              </f:facet>
+                    <h:outputText value="#{etatcarte.typeEtat.intitule}" />
+              </p:column>
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Date Blocage" />
+              </f:facet>
+                    <h:outputText value="#{etatcarte.datetat}" />
+              </p:column>
+              
+            </p:dataTable>
+        
+        
+   
+        
+ </h:form>
+</p:tab>
+
+</p:tabView>
+</p:tab>
+</p:tabView>
+</ui:define>
+</ui:composition>

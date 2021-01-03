@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title>Nouveau Porteur</title>
+</h:head>
+
+
+    <h:body>
+<h:form>
+<p:growl id="growl" showDetail="true" sticky="false" life="3000" />
+<h:panelGrid id="lay" columns="4" cellpadding="5">
+
+					<h:outputLabel for="demandeac" title="DemandeAcquisiion"
+						value="Demande Acquisiion:"
+						style="color: #336699; font-weight:bold;" />
+					<p:inputText
+						value="#{demandeacquisitionbean.editDemandeAcquisition.demandeacquisitionid}"
+						id="demandeac" label="demandeac"  />
+
+
+					<h:outputLabel for="nomporteur" title="NomPorteur"
+						value="Nom Porteur:" style="color: #336699; font-weight:bold;" />
+					<p:inputText
+						value="#{porteurBean.porteur.nomporteur}"
+						id="nomporteur" label="nomporteur" required="true" />
+
+					<h:outputLabel for="nomembosse" title="NomEmbosse"
+						value="Nom Embosse"
+						style="color: #336699; font-weight:bold;" />
+					<p:inputText value="#{porteurBean.porteur.nomembosse}" id="nomembosse" label="nomembosse" required="true" />
+
+			<br/>
+
+                     <f:facet name="footer">
+						<p:commandButton value="Enregistrer" update="growl" action="#{porteurBean.ajoutPorteur}" oncomplete="window.close()"/>
+						
+						
+					</f:facet>
+
+                     </h:panelGrid>
+					</h:form>
+       </h:body>
+     </html>

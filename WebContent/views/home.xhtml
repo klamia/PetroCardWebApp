@@ -1,0 +1,137 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags"
+    template="/WEB-INF/templates/templatelogin.xhtml">
+
+
+	
+	<ui:define name="content">
+	<h:form>  
+      
+  
+    <p:toolbar style="margin-top :10px;">  
+    <p:toolbarGroup align="left">
+     <p:menuButton value="Acquisition Carte">  
+            <p:menuitem value="Gestion Des Demande Aquisition Carte" url="DemandeAquisitionCarte.xhtml"/>  
+            <p:menuitem value="Gestion Des Commande Carte" url="CommandeCarte.xhtml" />  
+            <p:menuitem value="Gestion Des Carte" url="Carte.xhtml" />
+            <p:menuitem value="Consultation" url="#" />
+     </p:menuButton> 
+     <p:separator /> 
+   
+        <p:menuButton value="Activation Carte">  
+            <p:menuitem value="MAJ Etat Carte" url="MAJEtatCarteActiv.xhtml"/>  
+            <p:menuitem value="Consultation Liste Cartes Activées" url="ConsultationCarteActive.xhtml" />  
+            
+     </p:menuButton>   
+  <p:separator />  
+  <p:menuButton  value="Validité Carte" >
+            <p:menuitem value="Consultation Liste Cartes Expirées" url="ValiditeCarte.xhtml" /> 
+  </p:menuButton>  
+         <p:separator /> 
+        <p:button  value="Chargement/Rechargement Carte" outcome="ChargementCarte">
+        </p:button> 
+         <p:separator /> 
+        <p:button  value="Blocage Carte" outcome="BlocageCarte">
+        </p:button>
+         
+         <p:separator /> 
+        
+        <p:button  value="Remplacement Carte" outcome="RemplacementCarte">
+        </p:button>
+        
+    
+    </p:toolbarGroup>  
+  
+    <p:toolbarGroup align="right">  
+      <sec:authorize ifAllGranted="ROLE_ADMIN">  
+        <p:menuButton value="Configuration">  
+            <p:menuitem value="Gestion Des Comptes" />  
+            <p:menuitem value="Gestion des Roles" url="/views/adminPages/GestionRole.xhtml" />
+             <p:menuitem value="Gestion Des Types Carte" />  
+             
+        </p:menuButton>
+         </sec:authorize> 
+         <p:commandButton value="Deconnexion" action="#{logoutBean.logout}" icon="ui-icon-extlink" />
+    </p:toolbarGroup>  
+  
+  </p:toolbar>
+
+ 
+<p:galleria effect="slide" effectDuration="1000" styleClass="galleria" panelWidth="500" panelHeight="350">
+<p:graphicImage styleClass="graphimage" value="/galleria/naflogo.png" title="image1" alt="image1 desc" />
+<p:graphicImage styleClass="graphcimage" value="/galleria/cartapuce.png" title="image2" alt=" image2 desc" />
+<p:graphicImage styleClass="graphcimage" value="/galleria/prepayed.png" title="image3" alt=" image3 desc" />
+<p:graphicImage styleClass="graphcimage" value="/galleria/silver.png" title="image4" alt=" image4 desc" />
+<p:graphicImage styleClass="graphcimage" value="/galleria/gold.png" title="image5" alt=" image5 desc" />
+</p:galleria>
+  
+  <!--  
+      <p:tabView effect="fade" effectDuration="normal" style="margin-top :90px; font-size:12px; font-family: arial; " orientation="left"  >  
+  
+        <p:tab title="Acquisition Carte" style="text-align:right;" >  
+            <h:panelGrid columns="2" cellpadding="10" >
+             
+             <h:outputText  
+                    value="The story begins as Don Vito Corleone, the head of a New York Mafia family, oversees his daughter's wedding.   
+                    His beloved son Michael has just come home from the war, but does not intend to become part of his father's business. T  
+                    hrough Michael's life the nature of the family business becomes clear. The business of the family is just like the head of the family, kind and benevolent to those who give respect,   
+                    but given to ruthless violence whenever anything stands against the good of the family." />
+                
+               <p:graphicImage value="/images/cartapuce.png" />  
+                
+                  
+            </h:panelGrid>  
+             
+             
+        </p:tab>
+         
+        <p:tab title="Activation Carte">  
+            <h:panelGrid columns="2" cellpadding="10">  
+                <p:graphicImage value="/images/naflogo.png" />  
+                <h:outputText value="Francis Ford Coppola's legendary continuation and sequel to his landmark 1972 film, The_Godfather, parallels the young Vito Corleone's rise with his son Michael's spiritual fall, deepening The_Godfather's depiction of the dark side of the American dream.   
+                In the early 1900s, the child Vito flees his Sicilian village for America after the local Mafia kills his family. Vito struggles to make a living, legally or illegally, for his wife and growing brood in Little Italy,   
+                killing the local Black Hand Fanucci after he demands his customary cut of the tyro's business. With Fanucci gone, Vito's communal stature grows."></h:outputText>  
+            </h:panelGrid>  
+        </p:tab>  
+        <p:tab title="Validité Carte" >  
+            <h:panelGrid columns="2" cellpadding="10">  
+                <p:graphicImage value="/images/naflogo.png" />  
+                <h:outputText value="After a break of more than 15 years, director Francis Ford Coppola and writer Mario Puzo returned to the well for this third and final story of the fictional Corleone crime family.   
+                    Two decades have passed, and crime kingpin Michael Corleone, now divorced from his wife Kay has nearly succeeded in keeping his promise that his family would one day be completely legitimate."></h:outputText>  
+            </h:panelGrid>
+              </p:tab> 
+          <p:tab title="Chargement/Rechargement Carte" >  
+            <h:panelGrid columns="2" cellpadding="10">  
+                <p:graphicImage value="/images/naflogo.png" />  
+                <h:outputText value="After a break of more than 15 years, director Francis Ford Coppola and writer Mario Puzo returned to the well for this third and final story of the fictional Corleone crime family.   
+                    Two decades have passed, and crime kingpin Michael Corleone, now divorced from his wife Kay has nearly succeeded in keeping his promise that his family would one day be completely legitimate."></h:outputText>  
+            </h:panelGrid>
+              </p:tab> 
+            <p:tab title="Blocage Carte">  
+            <h:panelGrid columns="2" cellpadding="10">  
+                <p:graphicImage value="/images/naflogo.png" />  
+                <h:outputText value="After a break of more than 15 years, director Francis Ford Coppola and writer Mario Puzo returned to the well for this third and final story of the fictional Corleone crime family.   
+                    Two decades have passed, and crime kingpin Michael Corleone, now divorced from his wife Kay has nearly succeeded in keeping his promise that his family would one day be completely legitimate."></h:outputText>  
+            </h:panelGrid>
+              </p:tab> 
+            <p:tab title="Remplacement Carte">  
+            <h:panelGrid columns="2" cellpadding="10">  
+                <p:graphicImage value="/images/naflogo.png" />  
+                <h:outputText value="After a break of more than 15 years, director Francis Ford Coppola and writer Mario Puzo returned to the well for this third and final story of the fictional Corleone crime family.   
+                    Two decades have passed, and crime kingpin Michael Corleone, now divorced from his wife Kay has nearly succeeded in keeping his promise that his family would one day be completely legitimate."></h:outputText>  
+            </h:panelGrid>
+              </p:tab> 
+        
+  
+    </p:tabView>  
+  -->
+</h:form>  
+	    
+	</ui:define>
+	
+</ui:composition>

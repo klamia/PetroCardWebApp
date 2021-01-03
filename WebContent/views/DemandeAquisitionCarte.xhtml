@@ -1,0 +1,791 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags"
+    template="/WEB-INF/templates/templateprincipale.xhtml">
+	
+<ui:define name="sidemenu" >
+                
+                <h:form>
+                <div  >
+                
+               
+                
+                 </div>      
+                        
+                 </h:form>
+                   
+</ui:define>
+
+
+<ui:define name="content">
+
+<p:tabView id="tabdemview" dynamic="true" style="width:auto; height:99%; margin:0px; padding:0px;" >
+   
+<p:tab title="Liste Demande Acquisition" rendered="#{sec:areAllGranted('ROLE_ADMIN')}">
+  
+         <h:form id="AjoutD">
+           <p:commandButton value="Ajouter une Demande" style="margin-top:20px; " icon="ui-icon-adds" action="#{demandeacquisitionbean.addDemandeAcquisition}"  oncomplete="demAjout.show()"/> 
+        </h:form>
+     
+<h:form id="ListeDemande">
+         
+            <p:growl id="growl" showDetail="true" sticky="false"  />
+            <p:dataTable var="demandeacquisition" value="#{demandeacquisitionbean.listdemandeAcquisition}" id="table" widgetVar="DemandeTable" styleClass ="table2"  border="0" cellpadding="2" cellspacing="0"
+                         emptyMessage="Demande non trouvé" paginator="true" rows="5" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" style="width:auto; font-size:13px;margin-left:50px !important; margin-top:10px !important;" >
+ 
+                <f:facet name="header">
+                <p Class="tableheader"> <span>Liste Des Demandes Acquisition Carte </span></p>
+                </f:facet>
+                
+                
+                <p:column  >
+                    <p:commandButton id="voir" icon="ui-icon-search" update=":tabdemview:Aperçu:displayeee" action="#{demandeacquisitionbean.voirDemandeAcquisition(demandeacquisition)}" oncomplete="demApercu.show()" title="Aperçu"/>
+                    <p:spacer width="5" height="5" />
+                    <p:commandButton id="editer" rendered="#{sec:areAllGranted('ROLE_ADMIN')}" update=":tabdemview:Actualise:displaye" icon="ui-icon-arrowrefresh-1-w" 
+                    action="#{demandeacquisitionbean.editDemandeAcquisition(demandeacquisition)}" oncomplete="demEdit.show()" title="Editer"/>
+                </p:column>
+                
+                <p:column headerText="Code Demande" id="demandeId" filterBy="#{demandeacquisition.demandeacquisitionid}" filterMatchMode="exact" >
+                    <h:outputText value="#{demandeacquisition.demandeacquisitionid}" />
+                </p:column>
+                <p:column headerText="Num Bon Commande" id="numBC" filterBy="#{demandeacquisition.numbc}" filterMatchMode="exact" >
+                    <h:outputText value="#{demandeacquisition.numbc}" />
+                </p:column>
+                
+                <p:column headerText="Date Demande" id="DateDemande"   >
+                    <h:outputText value="#{demandeacquisition.datedemac}" />
+                </p:column>
+                
+                <p:column headerText="Agence BEA" id="agencebea"  >
+                    <h:outputText value="#{demandeacquisition.agencebea}" />
+                </p:column>
+                
+                <p:column headerText="Nom Demandeur" id="NomDemandeur"   >
+                    <h:outputText value="#{demandeacquisition.nomdem}" />
+                </p:column>
+                
+                <p:column headerText="Prenom Demandeur" id="PrenomDemandeur" >
+                    <h:outputText value="#{demandeacquisition.prenomdem}" />
+                </p:column>
+                
+               
+                </p:dataTable>
+        
+        </h:form>
+<h:form id="FormulaireDemandeCarte">
+			<p:dialog id="editD" header="Formulaire Demande Carte "
+				widgetVar="demAjout" resizable="false">
+
+				<p:growl id="growl" showDetail="true" sticky="false" life="10000" />
+				<h:panelGrid id="display" columns="4" cellpadding="5">
+				
+				<h:outputLabel for="numBC" title="NumeroBonCommande"
+						value="Numero Bon Commande:"
+						style="color: #336699; font-weight:bold;" />
+					<p:inputText
+						value="#{demandeacquisitionbean.demandeAcquisition.numbc}"
+						id="numBC" label="numBC" required="true" />
+
+					<h:outputLabel for="date" title="DateDemande" value="Date Demande"
+						style="color: #336699; font-weight:bold;" />
+					<p:calendar widgetVar="myCalendar"
+						value="#{demandeacquisitionbean.demandeAcquisition.datedemac}"
+						pattern="dd/MM/yyyy" label="date" required="true" />
+
+					<h:outputLabel for="agencebea" title="AgenceBea"
+						value="Agence Bea:" style="color: #336699; font-weight:bold;" />
+					<p:inputText
+						value="#{demandeacquisitionbean.demandeAcquisition.agencebea}"
+						id="agencebea" label="agencebea" required="true" />
+                  	
+					<h:outputText style="color: #336699; font-weight:bold;"
+						value="Station Service:"  />
+					<p:selectOneMenu value="#" panelStyle="width:150px" effect="fade"
+						style="width:160px" filter="true"
+						filterMatchMode="startsWith" >
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						<f:selectItems value="#"  />
+					</p:selectOneMenu>
+             
+					<h:outputLabel for="nom" title="NomDemandeur"
+						value="Nom Demandeur:" style="color: #336699; font-weight:bold;" />
+					<p:inputText value="#{demandeacquisitionbean.demandeAcquisition.nomdem}" id="nom" label="nom" />
+
+					<h:outputLabel for="prenom" title="PrenomDemandeur"
+						value="Prenom Demandeur:"
+						style="color: #336699; font-weight:bold;" />
+					<p:inputText value="#{demandeacquisitionbean.demandeAcquisition.prenomdem}" id="prenom" label="prenom" />
+					
+                    <h:outputText style="color: #336699; font-weight:bold;"
+						value="Type Carte:" />
+					<p:selectOneMenu value="#{demandeacquisitionbean.demandeAcquisition.typeCarte}" converter="#{typeCarteConverter}"
+					 panelStyle="width:150px" effect="fade"
+					 style="width:160px" filter="true"
+						filterMatchMode="startsWith">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						
+						<f:selectItems value="#{autoCompleteBean.selectItemTypeCarte}"/>
+						 
+					</p:selectOneMenu>
+					
+					<h:outputText style="color: #336699; font-weight:bold;"
+						value="Structure:" />
+					<p:selectOneMenu value="#" panelStyle="width:150px" effect="fade"
+						 style="width:160px" filter="true"
+						filterMatchMode="startsWith">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						<f:selectItems value="#"  />
+					</p:selectOneMenu>
+					
+                     <h:outputText style="color: #336699; font-weight:bold;" value="Client Existant:" /> 
+                    <p:selectOneMenu id="clt" value="#{demandeacquisitionbean.demandeAcquisition.client}" converter="#{clientConverter}"
+						panelStyle="width:150px" effect="fade" style="width:160px"
+						filter="true" filterMatchMode="startsWith">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						<f:selectItems value="#{autoCompleteBean.selectItemClients}" />
+					</p:selectOneMenu>
+                   <p:commandButton id="clientbutton" icon="ui-icon-extlink" process="@this" value="Nouveau Client" 
+                     action="#{clientBean.addClient}" oncomplete="cltAjout.show()" title="Ajouter"/>  
+              
+              <br/>
+					<h:outputText style="color: #336699; font-weight:bold;"
+						value="Utilisateur:" />
+					<p:selectOneMenu value="#" panelStyle="width:150px" effect="fade"
+						 style="width:160px" filter="true"
+						filterMatchMode="startsWith">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						<f:selectItems value="#"  />
+					</p:selectOneMenu>
+
+                     <script type="text/javascript">
+                         jQuery(document).ready(function(){
+                         myCalendar.jqEl.datepicker("option", "maxDate", +0);//set maxDate to today
+                          });     
+                             </script>
+                    
+                  </h:panelGrid>
+                 <br/>
+                   <br/>
+                   
+					<f:facet name="footer">
+						<p:commandButton value="Enregistrer" update="growl"
+							action="#{demandeacquisitionbean.ajoutDemandeAcquisition}"
+							oncomplete="demAjout.hide()" />
+						<p:spacer width="50" height="10" />
+						<p:commandButton value="Enregistrer et Ajouter Formulaire" 
+							action="#{demandeacquisitionbean.ajoutDemandeAcquisition}"
+							update="growl"  oncomplete="demAjout.show()" />
+						<p:spacer width="50" height="10" />
+						<p:commandButton value="Annuler" update="editD" process="@none"
+							actionListener="#{demandeacquisitionbean.reset}" />
+					</f:facet>
+				
+
+			</p:dialog>
+
+</h:form>
+
+<h:form id="FormulaireSaisieClient">
+<p:dialog id="ajoutclt" header="Formulaire Demande Client "
+				widgetVar="cltAjout" resizable="false">
+<p:growl id="growl" showDetail="true" sticky="false" life="3000" />
+
+<h:panelGrid id="lay" columns="4" cellpadding="5">
+
+					<h:outputLabel for="raisonsocial" title="RaisonSocial"
+						value="Raison Social:"
+						style="color: #336699; font-weight:bold;" />
+					<p:inputText
+						value="#{clientBean.client.raisonsocial}"
+						id="raisonsocial" label="raisonsocial" required="true" />
+
+
+					<h:outputLabel for="adresse" title="Adresse"
+						value="Adresse:" style="color: #336699; font-weight:bold;" />
+					<p:inputText
+						value="#{clientBean.client.adresse}"
+						id="adresse" label="adresse" required="true" />
+
+					<h:outputLabel for="ville" title="Ville"
+						value="Ville:"
+						style="color: #336699; font-weight:bold;" />
+					<p:inputText value="#{clientBean.client.ville}" id="ville" label="ville" />
+
+					<h:outputLabel for="email" title="Email"
+						value="Email:" style="color: #336699; font-weight:bold;" />
+					<p:inputText value="#{clientBean.client.email}" id="email" label="email" />
+
+					<h:outputLabel for="tel" title="TelFixe"
+						value="Telephone Fixe:"
+						style="color: #336699; font-weight:bold;" />
+					<p:inputMask value="#{clientBean.client.tel}" mask="(999) 99-99-99" id="tel" label="tel"/> 
+					
+
+                     <f:facet name="footer">
+						<p:commandButton value="Enregistrer" update=":tabdemview:FormulaireDemandeCarte:clt, growl" action="#{clientBean.ajoutClient}"  oncomplete="cltAjout.hide()"/>
+						<p:spacer width="50" height="10" />
+						<p:commandButton value="Annuler" update="lay" process="@none"
+							actionListener="#{demandeacquisitionbean.reset}" />
+					</f:facet>
+
+                     </h:panelGrid>
+                     </p:dialog>
+					</h:form>
+     
+<h:form id="Actualise">
+            <p:dialog header="Modification Demande Acquisition" widgetVar="demEdit" resizable="false" id="editDem">
+                <p:growl id="growl" showDetail="true" sticky="false" />
+                <h:panelGrid id="displaye" columns="2" cellpadding="4" style="margin:0 auto;">
+ 
+                    <f:facet name="header">
+                        
+                    </f:facet>
+ 
+ 
+                    <h:outputLabel for="numBC" title="NumeroBonCommande"
+						value="Numero Bon Commande:"
+						style="color: #336699; font-weight:bold;" />
+					<p:inputText
+						value="#{demandeacquisitionbean.editedDemandeAcquisition.numbc}"
+						id="numBC" />
+
+					<h:outputLabel for="date" title="DateDemande" value="Date Demande"
+						style="color: #336699; font-weight:bold;" />
+					<p:calendar widgetVar="myCalendar"
+						value="#{demandeacquisitionbean.editedDemandeAcquisition.datedemac}"
+						pattern="dd/MM/yyyy" />
+					<h:outputLabel for="agencebea" title="AgenceBea"
+						value="Agence Bea:" style="color: #336699; font-weight:bold;" />
+					<p:inputText
+						value="#{demandeacquisitionbean.editedDemandeAcquisition.agencebea}"
+						id="agencebea"  />
+					<h:outputText style="color: #336699; font-weight:bold;"
+						value="Station Service:"  />
+					<p:selectOneMenu value="#" panelStyle="width:150px" effect="fade"
+						 style="width:160px" filter="true"
+						filterMatchMode="startsWith" >
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						<f:selectItems value="#"  />
+					</p:selectOneMenu>
+             
+					<h:outputLabel for="nom" title="NomDemandeur"
+						value="Nom Demandeur:" style="color: #336699; font-weight:bold;" />
+					<p:inputText value="#{demandeacquisitionbean.editedDemandeAcquisition.nomdem}" id="nom"  />
+
+					<h:outputLabel for="prenom" title="PrenomDemandeur"
+						value="Prenom Demandeur:"
+						style="color: #336699; font-weight:bold;" />
+					<p:inputText value="#{demandeacquisitionbean.editedDemandeAcquisition.prenomdem}" id="prenom"  />
+					
+                    <h:outputText style="color: #336699; font-weight:bold;"
+						value="Type Carte:" />
+					<p:selectOneMenu value="#{demandeacquisitionbean.editedDemandeAcquisition.typeCarte}" converter="#{typeCarteConverter}"
+					 panelStyle="width:150px" effect="fade"
+					 style="width:160px" filter="true"
+						filterMatchMode="startsWith">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						
+						<f:selectItems value="#{autoCompleteBean.selectItemTypeCarte}"/>
+						 
+					</p:selectOneMenu>
+					
+                     <h:outputText style="color: #336699; font-weight:bold;" value="Client Existant:" /> 
+                    <p:selectOneMenu value="#{demandeacquisitionbean.editedDemandeAcquisition.client}" converter="#{clientConverter}"
+						panelStyle="width:150px" effect="fade" style="width:160px"
+						filter="true" filterMatchMode="startsWith">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						<f:selectItems value="#{autoCompleteBean.selectItemClients}" />
+					</p:selectOneMenu>
+                   
+      
+					<h:outputText style="color: #336699; font-weight:bold;"
+						value="Utilisateur:" />
+					<p:selectOneMenu value="#" panelStyle="width:150px" effect="fade"
+						 style="width:150px" filter="true"
+						filterMatchMode="startsWith">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						<f:selectItems value="#"  />
+					</p:selectOneMenu>
+
+                    <h:outputText style="color: #336699; font-weight:bold;"
+						value="Structure:" />
+					<p:selectOneMenu value="#" panelStyle="width:150px" effect="fade"
+						 style="width:150px" filter="true"
+						filterMatchMode="startsWith">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						<f:selectItems value="#"  />
+					</p:selectOneMenu>
+					
+					<script type="text/javascript">
+                    jQuery(document).ready(function(){
+                     myCalendar.jqEl.datepicker("option", "maxDate", +0);//set maxDate to today
+                     });     
+                   </script>
+                </h:panelGrid>
+                <p:separator/>
+                <br/>
+                <p:commandButton value="Enregistrer" update=":tabdemview:ListeDemande:table, growl" action="#{demandeacquisitionbean.updateDemandeAcquisition}" oncomplete="demEdit.hide()"/>
+            </p:dialog>
+         </h:form>
+
+<h:form id="Aperçu">
+            <p:dialog header="Aperçu Demande Acquisition" widgetVar="demApercu" resizable="false" id="apercuDem">
+                
+                <h:panelGrid id="displayeee" columns="2" cellpadding="8" style="margin:0 auto;">
+ 
+                    <f:facet name="header"> 
+                    </f:facet>
+                    
+                    <h:outputLabel for="numDem" title="NumeroDemande"
+						value="Numero Demande Acquisition:"
+						style="color: black; font-weight:bold;" />
+					<h:outputText
+						value="#{demandeacquisitionbean.demandeEnCours.demandeacquisitionid}"
+						id="numDem" style="color: #336699; font-weight:bold;" />
+						
+                    <h:outputLabel for="numBC" title="NumeroBonCommande"
+						value="Numero Bon Commande:"
+						style="color: black; font-weight:bold;" />
+					<h:outputText
+						value="#{demandeacquisitionbean.demandeEnCours.numbc}"
+						id="numBC" style="color: #336699; font-weight:bold;" />
+
+					<h:outputLabel for="date" title="DateDemande" value="Date Demande:"
+						style="color: black; font-weight:bold;" />
+					<h:outputText
+						value="#{demandeacquisitionbean.demandeEnCours.datedemac}"
+						id="date" style="color: #336699; font-weight:bold;" /> 
+						
+					<h:outputLabel for="agencebea" title="AgenceBea"
+						value="Agence Bea:" style="color: black; font-weight:bold;" />
+					<h:outputText
+						value="#{demandeacquisitionbean.demandeEnCours.agencebea}"
+						id="agencebea" style="color: #336699; font-weight:bold;" /> 
+						
+					<h:outputLabel for="stationservice" style="color: black; font-weight:bold;"
+						value="Station Service:" Title="stationService" />
+					<h:outputText value="#{demandeacquisitionbean.demandeEnCours.stationService.stationserviceid}" id="stationservice" 
+					style="color: #336699; font-weight:bold;" /> 
+             
+					<h:outputLabel for="nom" title="NomDemandeur"
+						value="Nom Demandeur:" style="color: black; font-weight:bold;" />
+					<h:outputText value="#{demandeacquisitionbean.demandeEnCours.nomdem}" id="nom" 
+					style="color: #336699; font-weight:bold;" /> 
+
+					<h:outputLabel for="prenom" title="PrenomDemandeur"
+						value="Prenom Demandeur:"
+						style="color: black; font-weight:bold;" />
+					<h:outputText value="#{demandeacquisitionbean.demandeEnCours.prenomdem}" id="prenom"  
+                    style="color: #336699; font-weight:bold;" />
+					
+                    <h:outputLabel for="typecarte" title="TypeCarte" style="color: black; font-weight:bold;"
+						value="Type Carte:" />
+					<h:outputText value="#{demandeacquisitionbean.demandeEnCours.typeCarte.intitule}" id="typecarte"  
+					style="color: #336699; font-weight:bold;" />
+	
+                     <h:outputLabel for="client" title="Client" style="color: black; font-weight:bold;" value="Client:" /> 
+                    <h:outputText value="#{demandeacquisitionbean.demandeEnCours.client.raisonsocial}" id="client"  
+                    style="color: #336699; font-weight:bold;" />
+                    
+					<h:outputLabel for="utilisateur" title="Utilisateur" style="color: black; font-weight:bold;" value="Utilisateur:" />
+				      <h:outputText value="#{demandeacquisitionbean.demandeEnCours.user.userid}" id="utilisateur"  
+				      style="color: #336699; font-weight:bold;" />
+				      
+                  <h:outputLabel for="structure" title="Structure" style="color: black; font-weight:bold;"
+						value="Structure:" />
+				  <h:outputText value="#{demandeacquisitionbean.demandeEnCours.structure.nomstruct}" id="structure"  
+				  style="color: #336699; font-weight:bold;" />
+				 
+				 <h:outputLabel for="listeporteur" title="ListePorteur" style="color: black; font-weight:bold;"
+						value="Liste Porteur:" /> 
+			<h:panelGroup>	
+             <p:dataTable var="porteur" value="#{demandeacquisitionbean.demandeEnCours.idents}" emptyMessage="pas de porteur encore pour cette demande" >
+                  
+                  <p:column headerText="Id Porteur">
+                  <h:outputText value="#{porteur.porteurid}" />
+                   </p:column>
+ 
+                <p:column headerText="Nom Porteur">
+                <h:outputText value="#{porteur.nomporteur}" />
+                 </p:column>
+ 
+                  <p:column headerText="Nom Embosse">
+                   <h:outputText value="#{porteur.nomembosse}" />
+                  </p:column>
+ 
+                  <p:column headerText="Id DemandeAcquisition">
+                    <h:outputText value="#{porteur.demandeacquisition.demandeacquisitionid}" />
+                   </p:column>
+              </p:dataTable>
+               </h:panelGroup> 
+                
+                
+                
+                
+                </h:panelGrid>
+                 
+                 </p:dialog>
+         </h:form>            
+
+</p:tab>
+
+
+
+<p:tab title="Gestion Porteur Carte" rendered="#{sec:areAllGranted('ROLE_ADMIN')}" >
+<h:form id="AjoutP">
+           <p:commandButton value="Ajouter un Porteur" style="margin-top:20px;" icon="ui-icon-adds" action="#{porteurBean.ajoutPorteur}"  oncomplete="portAjout.show()"/> 
+        </h:form>
+        <br/>
+<h:form id="ListePorteur">
+       
+        <p:growl id="growl" showDetail="true" sticky="false"  />
+            <p:dataTable var="porteur" value="#{porteurBean.listPorteur}" emptyMessage="pas de porteur" id="tabPorteur">
+                  <f:facet name="header">
+                <p Class="tableheader"> <span>Liste Porteurs Carte </span></p>
+                </f:facet>
+                
+                  <p:column headerText="Id Porteur">
+                  <h:outputText value="#{porteur.porteurid}" />
+                   </p:column>
+ 
+                <p:column headerText="Nom Porteur">
+                <h:outputText value="#{porteur.nomporteur}" />
+                 </p:column>
+ 
+                  <p:column headerText="Nom Embosse">
+                   <h:outputText value="#{porteur.nomembosse}" />
+                  </p:column>
+ 
+                  <p:column headerText="Id DemandeAcquisition">
+                    <h:outputText value="#{porteur.demandeacquisition.demandeacquisitionid}" />
+                   </p:column>
+              
+                   <p:column>
+                    <p:commandButton id="supprimer"  icon="ui-icon-trash" action="#{porteurBean.supprimePorteur(porteur)}" oncomplete="confirmationP.show()" title="Supprimer"/>
+                    <p:spacer width="5" height="5" />
+                    <p:commandButton id="editer"  action="#{porteurBean.editPorteur(porteur)}"  update=":tabdemview:ListePorteur:ActualiseP:displayep" icon="ui-icon-arrowrefresh-1-w" 
+                    oncomplete="portEdit.show()" title="Editer"/>
+                  </p:column>
+            
+            </p:dataTable>
+</h:form>
+
+
+<h:form id="ActualiseP">
+            <p:dialog header="Modification Porteur" widgetVar="portEdit" resizable="false" id="editPort">
+                <p:growl id="growl" showDetail="true" sticky="false" />
+                <h:panelGrid id="displayep" columns="2" cellpadding="4" style="margin:0 auto;">
+ 
+                    <h:outputLabel for="nomporteur" title="NomPorteur"
+						value="Nom Porteur:" style="color: #336699; font-weight:bold;" />
+					<p:inputText
+				        value="#{porteurBean.editedPorteur.nomporteur}"
+						id="nomporteur" label="nomporteur" required="true" />
+
+					<h:outputLabel for="nomembosse" title="NomEmbosse"
+						value="Nom Embosse"
+						style="color: #336699; font-weight:bold;" />
+					<p:inputText value="#{porteurBean.editedPorteur.nomembosse}" id="nomembosse" label="nomembosse" required="true" />
+				
+                    <h:outputLabel for="demandeacp" title="DemandeAcquisiion"
+						value="Demande Acquisition:"
+						style="color: #336699; font-weight:bold;" />
+                    <p:selectOneMenu id="demandeacp" value="#{porteurBean.editedPorteur.demandeacquisition}" converter="#{demandeAcquisitionConverter}"
+					 panelStyle="width:150px" effect="fade"
+					 style="width:160px" filter="true"
+						filterMatchMode="startsWith">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						
+						<f:selectItems value="#{autoCompleteBean.selectItemDemandeAcquisitions}"/>
+						 
+					</p:selectOneMenu>
+                </h:panelGrid>
+                <p:separator/>
+                <br/>
+                <f:facet name="footer">
+                <p:commandButton value="Enregistrer" update=":tabdemview:ListePorteur:tabPorteur, growl" action="#{porteurBean.updatePorteur}" oncomplete="portEdit.hide()"/>
+                </f:facet>
+            </p:dialog>
+</h:form>
+
+<h:form id="FormulairePorteurCarte"> 
+ <p:dialog id="ajoutPO" header="Formulaire Ajout Porteur Carte "
+				widgetVar="portAjout" resizable="false">
+
+				<p:growl id="growl" showDetail="true" sticky="false" life="10000" />
+				<h:panelGrid id="display5" columns="2" cellpadding="5">
+				
+					<h:outputLabel for="nomporteur" title="NomPorteur"
+						value="Nom Porteur:" style="color: #336699; font-weight:bold;" />
+					<p:inputText
+				        value="#{porteurBean.porteur.nomporteur}"
+						id="nomporteur" label="nomporteur" required="true" />
+
+					<h:outputLabel for="nomembosse" title="NomEmbosse"
+						value="Nom Embosse"
+						style="color: #336699; font-weight:bold;" />
+					<p:inputText value="#{porteurBean.porteur.nomembosse}" id="nomembosse" label="nomembosse" required="true" />
+					
+					<h:outputLabel for="demandeacp" title="DemandeAcquisiion"
+						value="Demande Acquisition:"
+						style="color: #336699; font-weight:bold;" />
+					<p:selectOneMenu id="demandeacp" value="#{porteurBean.porteur.demandeacquisition}" converter="#{demandeAcquisitionConverter}"
+					 panelStyle="width:150px" effect="fade"
+					 style="width:160px" filter="true"
+						filterMatchMode="startsWith">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						
+						<f:selectItems value="#{autoCompleteBean.selectItemDemandeAcquisitions}"/>
+						 
+					</p:selectOneMenu>	
+                     </h:panelGrid>
+		
+
+                     <f:facet name="footer">
+						<p:commandButton value="Enregistrer" update=":tabdemview:ListePorteur:tabPorteur, growl" action="#{porteurBean.addPorteur}" oncomplete="portAjout.hide()"/>
+					
+					</f:facet>
+				
+				</p:dialog>
+
+</h:form>
+
+<h:form id="SupprimerP">
+           
+                <p:growl id="growl" showDetail="true" sticky="false" />
+                <p:confirmDialog  message="Voulez vous supprimer ce porteur?" global="true"
+                 header="Confirmation de Suppression" severity="alert" widgetVar="confirmationP" resizable="false" id="suprPort">
+                 <p:commandButton value="OK" icon="ui-icon-check" update=":tabdemview:ListePorteur:tabPorteur, growl"  action="#{porteurBean.deletePorteur}"  styleClass="ui-confirmdialog-yes" oncomplete="confirmation.hide()" />
+                 <p:commandButton value="Annuler" icon="ui-icon-close" onclick="confirmation.hide()" type="button" />
+                 </p:confirmDialog>
+                 
+</h:form>
+
+
+
+</p:tab>
+
+
+
+<p:tab title="Suivi Etat Demande Acquisition" >
+ <h:form id="affichage">
+            
+            <p:dataTable    var="commande" value="#{commandeBean.listCommande}" id="tab" widgetVar="CommandeTable" styleClass ="table3"
+                         paginator="true" rows="5"  emptyMessage="Demande non encore traitée">
+
+                <f:facet name="header">
+                 <p Class="tableheader"> <span>Suivi Etat Demandes</span></p>
+                  
+                </f:facet>
+                
+                <p:column headerText="Code Demande Acquisition"  styleClass="columntext" filterBy="#{commande.demandeAcquisition.demandeacquisitionid}" filterMatchMode="exact" >
+              
+                    <h:outputText value="#{commande.demandeAcquisition.demandeacquisitionid}" />
+              </p:column>
+ 
+              <p:column headerText="Etat Demande" styleClass="columntext">
+                    <h:outputText value="#{commande.etat}" />
+              </p:column>
+              
+            </p:dataTable> 
+        
+ </h:form>
+</p:tab>
+
+<p:tab title="Consultation Liste Demande Acquisition" >
+<p:tabView id="tabdemview2" dynamic="true" style="width:100%; height:570px; margin:0px; ">
+
+<p:tab title="Liste Demandes Acquisition par Client" >
+        <h:form id="ListeDemandeClient">
+         
+            <p:growl id="growl" showDetail="true" sticky="false"  />
+            <p:dataTable var="client" value="#{clientBean.listClient}" id="tablecl" widgetVar="ClientTable" styleClass ="table2"  border="0" cellpadding="2" cellspacing="0"
+                         emptyMessage="Client non trouvé" paginator="true" rows="5" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" style="width:auto; font-size:13px;margin-left:50px !important; margin-top:10px !important;" >
+ 
+                <f:facet name="header">
+                <p Class="tableheader"> <span>Liste Des Clients </span></p>
+                 
+                </f:facet>
+                
+                
+                <p:column  >
+                    <p:commandButton id="voircl" icon="ui-icon-search" update=":tabdemview:tabdemview2:Aperçucl:displayeeecl" action="#{clientBean.editClient(client)}" oncomplete="clApercu.show()" title="Aperçu"/>
+          
+                </p:column>
+                
+                <p:column headerText="Code Client" id="clientId" filterBy="#{client.clientid}" filterMatchMode="exact" >
+                    <h:outputText value="#{client.clientid}" />
+                </p:column>
+                <p:column headerText="Raison Social" id="rsocial" filterBy="#{client.raisonsocial}" filterMatchMode="exact" >
+                    <h:outputText value="#{client.raisonsocial}" />
+                </p:column>
+                
+                <p:column headerText="Adresse" id="adresse"   >
+                    <h:outputText value="#{client.adresse}" />
+                </p:column>
+                
+                <p:column headerText="Ville" id="ville"  >
+                    <h:outputText value="#{client.ville}" />
+                </p:column>
+                
+                <p:column headerText="Num Contrat" id="numcontrat"   >
+                    <h:outputText value="#{client.contrat.contratid}" />
+                </p:column>
+                
+                <p:column headerText="Email" id="email" >
+                    <h:outputText value="#{client.email}" />
+                </p:column>
+                
+                <p:column headerText="Telephone" id="telCl" >
+                    <h:outputText value="#{client.tel}" />
+                </p:column>
+               
+                </p:dataTable>
+        
+        </h:form>
+   
+ <h:form id="Aperçucl">
+            <p:dialog header="Aperçu Client" widgetVar="clApercu" resizable="false" id="apercuClt">
+                
+                <h:panelGrid id="displayeeecl" columns="2" cellpadding="8" style="margin:0 auto;">
+ 
+                    <f:facet name="header"> 
+                    </f:facet>
+                    
+                    <h:outputLabel for="numCL" title="CodeClient"
+						value="Code Client:"
+						style="color: black; font-weight:bold;" />
+					<h:outputText
+						value="#{clientBean.editClient.clientid}"
+						id="numCL" style="color: #336699; font-weight:bold;" />
+						
+                    <h:outputLabel for="RaisonSocial" title="RaisonSocial"
+						value="Raison Social:"
+						style="color: black; font-weight:bold;" />
+					<h:outputText
+						value="#{clientBean.editClient.raisonsocial}"
+						id="RaisonSocial" style="color: #336699; font-weight:bold;" />
+
+					<h:outputLabel for="adresse" title="Adresse" value="Adresse:"
+						style="color: black; font-weight:bold;" />
+					<h:outputText
+						value="#{clientBean.editClient.adresse}"
+						id="adresse" style="color: #336699; font-weight:bold;" /> 
+						
+					<h:outputLabel for="ville" title="Ville"
+						value="Ville:" style="color: black; font-weight:bold;" />
+					<h:outputText
+						value="#{clientBean.editClient.ville}"
+						id="ville" style="color: #336699; font-weight:bold;" /> 
+						
+					<h:outputLabel for="contrat" style="color: black; font-weight:bold;"
+						value="Numero Contrat :" Title="Num Contrat" />
+					<h:outputText value="#{clientBean.editClient.contrat.contratid}" id="contrat" 
+					style="color: #336699; font-weight:bold;" /> 
+             
+					<h:outputLabel for="emailCl" title="Email"
+						value="Email:" style="color: black; font-weight:bold;" />
+					<h:outputText value="#{clientBean.editClient.email}" id="emailCl" 
+					style="color: #336699; font-weight:bold;" /> 
+
+					<h:outputLabel for="tel" title="Tel"
+						value="Telephone:"
+						style="color: black; font-weight:bold;" />
+					<h:outputText value="#{clientBean.editClient.tel}" id="tel"  
+                    style="color: #336699; font-weight:bold;" />
+	
+				 <h:outputLabel for="listedemande" title="ListeDemande" style="color: black; font-weight:bold;"
+						value="Liste Demande:" /> 
+			<h:panelGroup>	
+             <p:dataTable var="demandeAcquisition" id="tabcldem" value="#{clientBean.editClient.demandeAcquisitions}" emptyMessage="pas de demande pour ce client" >
+                  
+                  <f:facet name="header">
+                 <p Class="tableheader"> <span>Liste Demandes d'Acquisition Carte</span></p>
+                  <h:panelGrid columns="2">  
+                   <p:panel header="Exporter Liste en Document">  
+                  <h:commandLink>  
+                     <p:graphicImage value="/images/excel.png" />  
+                     <p:dataExporter type="xls" target="tabcldem" fileName="ListeDemandesAcquisitionCarte"/>  
+                  </h:commandLink>  
+  
+                  <h:commandLink>  
+                       <p:graphicImage value="/images/pdf.png" />  
+                     <p:dataExporter type="pdf" target="tabcldem" fileName="ListeDemandesAcquisitionCarte" preProcessor="#{demandeacquisitionbean.preProcessPDF}"/>  
+                 </h:commandLink>  
+                  </p:panel>
+    
+             </h:panelGrid> 
+                  
+                </f:facet>  
+               
+                  <p:column styleClass="columntext">
+                  <f:facet name="header" >
+                       <h:outputText value="Code demande" />
+                   </f:facet>
+                  <h:outputText value="#{demandeAcquisition.demandeacquisitionid}" />
+                   </p:column>
+ 
+                <p:column styleClass="columntext">
+                  <f:facet name="header" >
+                       <h:outputText value="Code demande" />
+                   </f:facet>
+                <h:outputText value="#{demandeAcquisition.datedemac}" />
+                 </p:column>
+                 
+                  <p:column styleClass="columntext">
+                  <f:facet name="header" >
+                       <h:outputText value="Nom Demandeure" />
+                   </f:facet>
+                   <h:outputText value="#{demandeAcquisition.nomdem}" />
+                  </p:column>
+                  
+                  
+                  <p:column styleClass="columntext">
+                  <f:facet name="header" >
+                       <h:outputText value="Prenom Demandeur" />
+                   </f:facet>
+                   <h:outputText value="#{demandeAcquisition.prenomdem}" />
+                  </p:column>
+ 
+                  
+                  <p:column styleClass="columntext">
+                  <f:facet name="header" >
+                       <h:outputText value="Client" />
+                   </f:facet>
+                    <h:outputText value="#{demandeAcquisition.client.raisonsocial}" />
+                   </p:column>
+              </p:dataTable>
+               </h:panelGroup> 
+    
+                </h:panelGrid>
+                 
+                 </p:dialog>
+         </h:form>            
+   
+   
+          
+</p:tab>
+<p:tab title="Liste Demandes Acquisition par Utilisateur" >
+</p:tab>
+<p:tab title="Liste Demandes Acquisition par Station Service" >
+</p:tab>
+<p:tab title="Liste Porteurs par Demande " >
+</p:tab>
+</p:tabView>
+
+</p:tab>
+
+
+</p:tabView>
+
+
+</ui:define>
+
+
+</ui:composition>

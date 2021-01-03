@@ -1,0 +1,405 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags"
+    template="/WEB-INF/templates/templateprincipale.xhtml">
+	
+<ui:define name="sidemenu" >
+                
+                <h:form>
+                <div></div>      
+                        
+                 </h:form>  
+</ui:define>
+<ui:define name="content">
+<p:tabView id="tabchargview" dynamic="true" style="width:auto; height:99%; margin:0px; padding:0px;" >
+<p:tab title="Gestion Demande Chargement/Rechargement Carte" >
+<h:form id="AjoutDC">
+           <p:commandButton value="Ajouter une Demande" style="margin-top:20px; " icon="ui-icon-adds" 
+           action="#{demandeChargementBean.addDemandeChargement}"  oncomplete="demCAjout.show()"/> 
+        </h:form>
+     
+<h:form id="ListeDemandeC">
+         
+            <p:growl id="growl" showDetail="true" sticky="false"  />
+            <p:dataTable var="bcchargrech" value="#{demandeChargementBean.listBCcharg}" id="tableC" widgetVar="DemandeCTable" styleClass ="table2"  border="0" cellpadding="2" cellspacing="0"
+                         emptyMessage="Aucune demande a afficher" paginator="true" rows="5" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" style="width:auto; font-size:13px;margin-left:50px !important; margin-top:10px !important;" >
+ 
+                <f:facet name="header">
+                <p Class="tableheader"> <span>Liste Des Demandes Chargement Carte </span></p>
+                </f:facet>
+                
+                
+                <p:column  >
+                    <p:commandButton id="voirC" icon="ui-icon-search" 
+                     action="#{demandeChargementBean.voirDemandeChargement(bcchargrech)}" update=":tabchargview:Aperçu:displayeee" oncomplete="demApercuC.show()" title="Aperçu"/>
+                    <p:spacer width="5" height="5" />
+                    <p:commandButton id="editerC" rendered="#{sec:areAllGranted('ROLE_ADMIN')}"  update=":tabchargview:Actualise:displaye"   icon="ui-icon-arrowrefresh-1-w" 
+                    action="#{demandeChargementBean.editDemandeChargement(bcchargrech)}" oncomplete="demEditC.show()" title="Editer"/>
+                </p:column>
+                
+                <p:column headerText="Num Demande" id="numDemId" filterBy="#{bcchargrech.bcchargrechid}" filterMatchMode="exact" >
+                    <h:outputText value="#{bcchargrech.bcchargrechid}" />
+                </p:column>
+                
+                <p:column headerText="Num Carte" id="numCarte" filterBy="#{bcchargrech.carte.numcarte}" filterMatchMode="exact" >
+                    <h:outputText value="#{bcchargrech.carte.numcarte}" />
+                </p:column>
+                <p:column headerText="Type Carte" id="typeC" filterBy="#{bcchargrech.carte.commande.demandeAcquisition.typeCarte.intitule}" filterMatchMode="exact" >
+                    <h:outputText value="#{bcchargrech.carte.commande.demandeAcquisition.typeCarte.intitule}" />
+                </p:column>
+                
+                <p:column headerText="Date Demande" id="DateDemandeC"   >
+                    <h:outputText value="#{bcchargrech.datebc}" />
+                </p:column>
+                
+                <p:column headerText="Client" id="clientC"  >
+                    <h:outputText value="#{bcchargrech.carte.commande.demandeAcquisition.client.raisonsocial}" />
+                </p:column>
+                
+                <p:column headerText="Montant Chargement" id="montC"  >
+                    <h:outputText value="#{bcchargrech.montantcharrecharg}" />
+                </p:column>
+ 
+                </p:dataTable>
+        
+        </h:form>
+<h:form id="FormulaireDemandeChargement">
+			<p:dialog id="editC" header="Formulaire Demande Chargement Carte "
+				widgetVar="demCAjout" resizable="false">
+
+				<p:growl id="growl" showDetail="true" sticky="false" life="10000" />
+				<h:panelGrid id="display" columns="2" cellpadding="5">
+				
+				
+				<h:outputText style="color: #336699; font-weight:bold;"
+						value="Numero Carte:*" />
+					<p:selectOneMenu value="#{demandeChargementBean.bcchargrech.carte}" converter="#{carteConverter}"
+					 panelStyle="width:150px" effect="fade"
+					 style="width:160px" filter="true"
+						filterMatchMode="startsWith">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						
+						<f:selectItems value="#{autoCompleteBean.selectItemCarte}"/>
+						 
+					</p:selectOneMenu>
+	
+				<h:outputLabel for="montant" title="Montant"
+						value="Montant Chargement:*"
+						style="color: #336699; font-weight:bold;" />
+					<p:inputText
+						value="#{demandeChargementBean.bcchargrech.montantcharrecharg}"
+						id="montant" label="montant" required="true" />
+
+
+					<h:outputLabel for="date" title="DateDemande" value="Date Demande Chargement"
+						style="color: #336699; font-weight:bold;" />
+					<p:calendar widgetVar="myCalendar"
+						value="#{demandeChargementBean.bcchargrech.datebc}"
+						pattern="dd/MM/yyyy" label="date" required="true" />
+
+
+                     <script type="text/javascript">
+                         jQuery(document).ready(function(){
+                         myCalendar.jqEl.datepicker("option", "maxDate", +0);//set maxDate to today
+                          });     
+                             </script>
+                    
+                  </h:panelGrid>
+                 <br/>
+                   <br/>
+                   
+					<f:facet name="footer">
+						<p:commandButton value="Enregistrer" update=":tabchargview:ListeDemandeC:tableC, growl"
+							action="#{demandeChargementBean.ajoutDemandeChargement}"
+							oncomplete="demCAjout.hide()" />
+						<p:spacer width="50" height="10" />
+						
+						<p:commandButton value="Annuler" update="editC" process="@none"
+							actionListener="#{demandeChargementBean.reset}" />
+					</f:facet>
+				
+
+			</p:dialog>
+
+</h:form>
+<h:form id="Actualise">
+            <p:dialog header="Modification Demande Chargement" widgetVar="demEditC" resizable="false" id="editDemC">
+                <p:growl id="growl" showDetail="true" sticky="false" />
+                <h:panelGrid id="displaye" columns="2" cellpadding="4" style="margin:0 auto;">
+ 
+                    <f:facet name="header">
+                        
+                    </f:facet>
+ 
+                  
+					<h:outputText style="color: #336699; font-weight:bold;"
+						value="Numero Carte:" />
+						
+					<p:selectOneMenu value="#{demandeChargementBean.editedBCcharg.carte}" converter="#{carteConverter}"
+					 panelStyle="width:150px" effect="fade"
+					 style="width:160px" filter="true"
+						filterMatchMode="startsWith">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						
+						<f:selectItems value="#{autoCompleteBean.selectItemCarte}"/>
+						 
+					</p:selectOneMenu>
+	
+				<h:outputLabel for="montantC" title="Montant"
+						value="Montant Chargement:"
+						style="color: #336699; font-weight:bold;" />
+					<p:inputText
+						value="#{demandeChargementBean.editedBCcharg.montantcharrecharg}"
+						id="montantC" label="montant"/>
+
+
+					<h:outputLabel for="dateC" title="DateDemande" value="Date Demande Chargement"
+						style="color: #336699; font-weight:bold;" />
+					<p:calendar widgetVar="myCalendar"
+						value="#{demandeChargementBean.editedBCcharg.datebc}"
+						pattern="dd/MM/yyyy" label="dateC" />
+
+
+                     <script type="text/javascript">
+                         jQuery(document).ready(function(){
+                         myCalendar.jqEl.datepicker("option", "maxDate", +0);//set maxDate to today
+                          });     
+                             </script>
+                     </h:panelGrid>
+                     <br/>
+                      <br/>
+                   
+					<f:facet name="footer">
+						<p:commandButton value="Enregistrer" update=":tabchargview:ListeDemandeC:tableC, growl"
+							action="#{demandeChargementBean.updateDemandeChargement}"
+							oncomplete="demEditC.hide()" />
+						<p:spacer width="50" height="10" />
+						
+						<p:commandButton value="Annuler" update="editDemC" process="@none"
+							actionListener="#{demandeChargementBean.reset}" />
+					</f:facet>
+				
+
+			</p:dialog>
+
+</h:form>
+
+<h:form id="Aperçu">
+            <p:dialog header="Aperçu Demande Chargement" widgetVar="demApercuC" resizable="false" id="apercuDem">
+                
+                <h:panelGrid id="displayeee" columns="2" cellpadding="8" style="margin:0 auto;">
+ 
+                    <f:facet name="header"> 
+                    </f:facet>
+                    
+                    <h:outputLabel for="numDem" title="NumeroDemande"
+						value="Numero Demande Chargement:"
+						style="color: black; font-weight:bold;" />
+					<h:outputText
+						value="#{demandeChargementBean.bcEnCours.bcchargrechid}"
+						id="numDem" style="color: #336699; font-weight:bold;" />
+					
+					<h:outputLabel for="dateC" title="DateDemande" value="Date Demande:"
+						style="color: black; font-weight:bold;" />
+					<h:outputText
+						value="#{demandeChargementBean.bcEnCours.datebc}"
+						id="dateC" style="color: #336699; font-weight:bold;" /> 
+					
+                    <h:outputLabel for="numCarte" title="NumeroCarte"
+						value="Numero Carte:"
+						style="color: black; font-weight:bold;" />
+					<h:outputText
+						value="#{demandeChargementBean.bcEnCours.carte.numcarte}"
+						id="numCarte" style="color: #336699; font-weight:bold;" />
+						
+		
+                    <h:outputLabel for="typecarte" title="TypeCarte" style="color: black; font-weight:bold;"
+						value="Type Carte:" />
+					<h:outputText value="#{demandeChargementBean.bcEnCours.carte.commande.demandeAcquisition.typeCarte.intitule}" id="typecarte"  
+					style="color: #336699; font-weight:bold;" />
+	
+                     <h:outputLabel for="client" title="Client" style="color: black; font-weight:bold;" value="Client:" /> 
+                    <h:outputText value="#{demandeChargementBean.bcEnCours.carte.commande.demandeAcquisition.client.raisonsocial}" id="client"  
+                    style="color: #336699; font-weight:bold;" />
+                    
+                    <h:outputLabel for="mt" title="MontantChargement" value="MontantChargement"
+						style="color: black; font-weight:bold;" />
+					<h:outputText
+						value="#{demandeChargementBean.bcEnCours.montantcharrecharg}"
+						id="mt" style="color: #336699; font-weight:bold;" /> 		
+				 
+                </h:panelGrid>
+                 
+                 </p:dialog>
+         </h:form>         
+
+</p:tab>
+
+<p:tab title = "Générer Fichier BC Chargement/Rechargement">
+
+<h:form id="FichierDemandeChargement">
+           
+            <p:dataTable  styleClass ="table4"  var="bcchargrech" value="#{demandeChargementBean.listBCcharg}" id="tab8" widgetVar="CommandeTable" 
+                         paginator="true" rows="10" >
+
+                <f:facet name="header">
+                 <p Class="tableheader"> <span>Liste Des Demandes Chargement Carte</span></p>
+                  <h:panelGrid columns="2">  
+    <p:panel header="Exporter Liste en Document">  
+        <h:commandLink>  
+            <p:graphicImage value="/images/excel.png" />  
+            <p:dataExporter type="xls" target="tab8" fileName="ListeDesDemandesChargement"/>  
+        </h:commandLink>  
+  
+        <h:commandLink>  
+            <p:graphicImage value="/images/pdf.png" />  
+            <p:dataExporter type="pdf" target="tab8" fileName="ListeDesDemandesChargement" preProcessor="#{demandeChargementBean.preProcessPDF}"/>  
+        </h:commandLink>
+        
+         </p:panel>
+    <p:panel header="Envoyer Liste exportée par email">  
+       <p:commandButton   value="Email" icon="ui-icon-extlink" actionListener="#{dialogBean.emailDialog}" />  
+          
+    </p:panel>
+    
+  </h:panelGrid> 
+  
+                </f:facet>
+ 
+              <p:column styleClass="columntext" filterBy="#{bcchargrech.bcchargrechid}" filterMatchMode="exact">
+              <f:facet name="header" >
+              <h:outputText value="Num Demande" />
+              </f:facet>
+                    <h:outputText value="#{bcchargrech.bcchargrechid}" />
+              </p:column>
+                
+              <p:column styleClass="columntext" filterBy="#{bcchargrech.carte.numcarte}" filterMatchMode="exact">
+              <f:facet name="header" >
+              <h:outputText value="Num carte" />
+              </f:facet>
+                    <h:outputText value="#{bcchargrech.carte.numcarte}" />
+              </p:column>
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Montant Chargement" />
+              </f:facet>
+                    <h:outputText value="#{bcchargrech.montantcharrecharg}" />
+              </p:column>
+              
+             
+            </p:dataTable>
+        
+      
+  </h:form>      
+
+
+</p:tab>
+
+
+<p:tab title="MAJ Etat Carte" >
+<h:form id="majEtatCarteCharge">
+<p:growl id="growl" showDetail="true" sticky="false"  />
+            <p:dataTable var="etatcarte" value="#{etatCarteBean.listetatCarteNonExpire}" id="table8" widgetVar="EtatTable" styleClass ="table4"
+                         emptyMessage="Carte non trouvé" paginator="true" rows="7" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" >
+ 
+                <f:facet name="header">
+                <p Class="tableheader"> <span>Liste Cartes en cours de validité </span></p>
+                    <p:outputPanel>
+                        <h:outputText value="Recherche:" />
+                        <p:inputText id="globalFilter" onkeyup="EtatTable.filter()" style="width:80px" />
+                    </p:outputPanel>
+                </f:facet>
+ 
+              <p:column headerText="Numero Carte" id="carteId" filterBy="#{etatcarte.carte.carteid}" filterMatchMode="exact" >
+                    <h:outputText value="#{etatcarte.carte.carteid}" />
+                </p:column>
+                <p:column headerText="Etat Carte" id="etatCarte"  >
+                    <h:outputText value="#{etatcarte.typeEtat.intitule}" />
+                </p:column>
+                
+                <p:column headerText="Date" id="dateconf" >
+                    <h:outputText value="#{etatcarte.datetat}" />
+                </p:column>
+                
+                
+                <p:column style="width:8%">
+                    <p:commandButton id="majEtat" value="MAJ Etat"  update=":tabchargview:ActualiseCharg:displaye"  action="#{etatCarteBean.addEtatCarteInitial(etatcarte)}" oncomplete="etatCarteCharg.show()" title="mettre a jours"/>
+                </p:column>
+                
+            </p:dataTable>
+        </h:form>
+        
+        <h:form id="ActualiseCharg">
+               
+            <p:dialog header="MAJ Etat Carte" widgetVar="etatCarteCharg" resizable="false" id="majEtatCharg"  >
+                <p:growl id="growl" showDetail="true" sticky="false" />
+                <h:panelGrid id="displaye" columns="2" cellpadding="4" style="margin:0 auto;">
+ 
+                    <f:facet name="header">
+                       
+                    </f:facet>
+ 
+ 
+                    <h:outputLabel for="numCarte1" title="NumeroCarte"
+						value="Numero Carte:"
+						style="color: #336699; font-weight:bold;" />
+					<p:inputText
+						value="#{etatCarteBean.etatcarte2.carte.carteid}"
+						id="numCarte1" />
+						
+					<h:outputLabel for="typeCarte1" title="TypeCarte"
+						value="Type Carte:"
+						style="color: #336699; font-weight:bold;" />
+					<p:inputText
+						value="#{etatCarteBean.etatcarte2.carte.commande.demandeAcquisition.typeCarte.intitule}"
+						id="typeCarte1" />	
+                    
+                    <h:outputLabel for="etat1" title="EtatCarte" value="Etat Carte:" style="color: black; font-size:13px; font-weight:bold;" /> 
+                    <p:selectOneMenu id="etat1" value="#{etatCarteBean.etatcarte2.typeEtat}" converter="#{typeEtatConverter}"
+					 panelStyle="width:150px" effect="fade"
+					 style="width:160px" filter="true"
+						filterMatchMode="startsWith" >
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						<f:selectItems value="#{autoCompleteBean.selectItemTypeEtat}"/>
+					</p:selectOneMenu>
+
+                    <h:outputLabel for="date1" title="DateMAJ" value="Date MAJ"
+						style="color: #336699; font-weight:bold;" />
+					<p:calendar widgetVar="myCalendar"
+						value="#{etatCarteBean.etatcarte2.datetat}"
+						pattern="dd/MM/yyyy" label="date1" required="true" />
+
+                           <script type="text/javascript">
+                            jQuery(document).ready(function(){
+                             myCalendar.jqEl.datepicker("option", "maxDate", +0);//set maxDate to today
+                              });     
+                            </script>						
+                  
+                  </h:panelGrid>
+						
+					<f:facet name="footer">
+						<p:commandButton value="Enregistrer" update=":tabchargview:majEtatCarteCharge:table8, growl"
+							action="#{etatCarteBean.ajoutEtatCarte}"
+							oncomplete="etatCarteCharge.hide()" />
+						
+					</f:facet>
+				
+
+			</p:dialog>
+         </h:form> 
+
+</p:tab>
+
+</p:tabView>
+</ui:define>
+
+
+</ui:composition>
+            

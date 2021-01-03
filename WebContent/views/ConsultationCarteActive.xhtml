@@ -1,0 +1,75 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags"
+    template="/WEB-INF/templates/templateprincipale.xhtml">
+	
+<ui:define name="sidemenu" >
+                
+                <h:form>
+                <div></div>      
+                        
+                 </h:form>  
+</ui:define>
+
+
+<ui:define name="content">
+
+<h:form id="affichageCarteActive">
+            
+            <p:dataTable  styleClass ="table4"  var="etatcarte" value="#{etatCarteBean.listetatCarteActive}" id="tab" widgetVar="EtatTable" 
+                         paginator="true" rows="10" >
+
+                <f:facet name="header">
+                 <p Class="tableheader"> <span>Liste Carte Active</span></p>
+                  <h:panelGrid columns="2">  
+    <p:panel header="Exporter Liste en Document">  
+        <h:commandLink>  
+            <p:graphicImage value="/images/excel.png" />  
+            <p:dataExporter type="xls" target="tab" fileName="ListeCarteActive"/>  
+        </h:commandLink>  
+  
+        <h:commandLink>  
+            <p:graphicImage value="/images/pdf.png" />  
+            <p:dataExporter type="pdf" target="tab" fileName="ListeCarteActive" preProcessor="#{etatCarteBean.preProcessPDFCarteActive}"/>  
+        </h:commandLink>  
+          
+    </p:panel>
+    
+                 </h:panelGrid> 
+                  
+                </f:facet>
+ 
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Numero Carte" />
+              </f:facet>
+                    <h:outputText value="#{etatcarte.carte.carteid}" />
+              </p:column>
+                
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Etat Carte" />
+              </f:facet>
+                    <h:outputText value="#{etatcarte.typeEtat.intitule}" />
+              </p:column>
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Date Activation" />
+              </f:facet>
+                    <h:outputText value="#{etatcarte.datetat}" />
+              </p:column>
+              
+            </p:dataTable>
+        
+        
+   
+        
+ </h:form>
+
+</ui:define>
+</ui:composition>

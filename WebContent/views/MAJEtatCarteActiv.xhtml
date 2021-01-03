@@ -1,0 +1,118 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags"
+    template="/WEB-INF/templates/templateprincipale.xhtml">
+	
+<ui:define name="sidemenu" >
+                
+                <h:form>
+                <div></div>      
+                        
+                 </h:form>  
+</ui:define>
+
+
+<ui:define name="content">
+<h:form id="majEtatCarteActive">
+<p:growl id="growl" showDetail="true" sticky="false"  />
+            <p:dataTable var="etatcarte" value="#{etatCarteBean.listetatCarteConfectionne}" id="table8" widgetVar="EtatTable" styleClass ="table4"
+                         emptyMessage="Carte non trouvé" paginator="true" rows="7" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" >
+ 
+                <f:facet name="header">
+                <p Class="tableheader"> <span>Liste Cartes</span></p>
+                    <p:outputPanel>
+                        <h:outputText value="Recherche:" />
+                        <p:inputText id="globalFilter" onkeyup="EtatTable.filter()" style="width:80px" />
+                    </p:outputPanel>
+                </f:facet>
+ 
+              <p:column headerText="ID Carte" id="carteId" filterBy="#{etatcarte.carte.carteid}" filterMatchMode="exact" >
+                    <h:outputText value="#{etatcarte.carte.carteid}" />
+                </p:column>
+                
+                <p:column headerText="Numero Carte" id="cartenum" filterBy="#{etatcarte.carte.numcarte}" filterMatchMode="exact" >
+                    <h:outputText value="#{etatcarte.carte.numcarte}" />
+                </p:column>
+                
+                <p:column headerText="Etat Carte" id="etatCarte"  >
+                    <h:outputText value="#{etatcarte.typeEtat.intitule}" />
+                </p:column>
+                
+                <p:column headerText="Date" id="dateconf" >
+                    <h:outputText value="#{etatcarte.datetat}" />
+                </p:column>
+                
+                
+                <p:column style="width:8%">
+                    <p:commandButton id="majEtat" value="MAJ Etat"  update=":Actualise:displaye"  action="#{etatCarteBean.addEtatCarteInitial(etatcarte)}" oncomplete="etatCarteAciv.show()" title="mettre a jours"/>
+                </p:column>
+                
+            </p:dataTable>
+        </h:form>
+        
+        <h:form id="Actualise">
+               
+            <p:dialog header="MAJ Etat Carte" widgetVar="etatCarteAciv" resizable="false" id="majEtatActive"  >
+                <p:growl id="growl" showDetail="true" sticky="false" />
+                <h:panelGrid id="displaye" columns="2" cellpadding="4" style="margin:0 auto;">
+ 
+                    <f:facet name="header">
+                       
+                    </f:facet>
+ 
+ 
+                    <h:outputLabel for="numCarte1" title="NumeroCarte"
+						value="Numero Carte:"
+						style="color: #336699; font-weight:bold;" />
+					<p:inputText
+						value="#{etatCarteBean.etatcarte2.carte.carteid}"
+						id="numCarte1" />
+						
+					<h:outputLabel for="typeCarte1" title="TypeCarte"
+						value="Type Carte:"
+						style="color: #336699; font-weight:bold;" />
+					<p:inputText
+						value="#{etatCarteBean.etatcarte2.carte.commande.demandeAcquisition.typeCarte.intitule}"
+						id="typeCarte1" />	
+                    
+                    <h:outputLabel for="etat1" title="EtatCarte" value="Etat Carte:" style="color: black; font-size:13px; font-weight:bold;" /> 
+                    <p:selectOneMenu id="etat1" value="#{etatCarteBean.etatcarte2.typeEtat}" converter="#{typeEtatConverter}"
+					 panelStyle="width:150px" effect="fade"
+					 style="width:160px" filter="true"
+						filterMatchMode="startsWith" >
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						<f:selectItems value="#{autoCompleteBean.selectItemTypeEtat}"/>
+					</p:selectOneMenu>
+
+                    <h:outputLabel for="date1" title="DateMAJ" value="Date MAJ"
+						style="color: #336699; font-weight:bold;" />
+					<p:calendar widgetVar="myCalendar"
+						value="#{etatCarteBean.etatcarte2.datetat}"
+						pattern="dd/MM/yyyy" label="date1" required="true" />
+
+                           <script type="text/javascript">
+                            jQuery(document).ready(function(){
+                             myCalendar.jqEl.datepicker("option", "maxDate", +0);//set maxDate to today
+                              });     
+                            </script>						
+                  
+                  </h:panelGrid>
+						
+					<f:facet name="footer">
+						<p:commandButton value="Enregistrer" update=":majEtatCarteActive:table8, growl"
+							action="#{etatCarteBean.ajoutEtatCarte}"
+							oncomplete="etatCarteAciv.hide()" />
+						
+					</f:facet>
+				
+
+			</p:dialog>
+         </h:form> 
+
+</ui:define>
+</ui:composition>

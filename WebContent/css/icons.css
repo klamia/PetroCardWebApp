@@ -1,0 +1,56 @@
+.save {
+	background-image: url(/referentiel/images/icons/edit.gif) !important;
+}
+
+.back {
+	background-image: url(/referentiel/images/icons/back.gif) !important;
+}
+
+.delete {
+	background-image: url(/referentiel/images/icons/delete.gif) !important;
+}
+
+.edit {
+	background-image: url(/referentiel/images/icons/edit.gif) !important;
+}
+
+.new {
+	background-image: url(/referentiel/images/icons/new.gif) !important;
+}
+
+.view {
+	background-image: url(/referentiel/images/icons/view.gif) !important;
+}
+.marker {
+	background-image: url(/referentiel/images/icons/marker-2.png) !important;
+}
+.search {
+	background-image: url(/referentiel/images/icons/search-tool-icon.png) !important;
+}
+
+.logo {
+	background-image: url(/referentiel/images/logo.png) !important;
+	background-repeat: no-repeat;
+	vertical-align: middle;
+}
+
+.deconnecter {
+	margin-right: 2px;
+	background-image: url(/referentiel/images/icons/deconnecter.png)
+		!important;
+}
+
+.membre {
+	margin-right: 2px;
+	background-image: url(/referentiel/images/icons/membres.png) !important;
+}
+
+.checked {
+	margin-right: 2px;
+	background-image: url(/referentiel/images/icons/checked.png) !important;
+}
+
+.unchecked {
+	margin-right: 2px;
+	background-image: url(/referentiel/images/icons/unchecked.png) !important;
+}

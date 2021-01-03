@@ -1,0 +1,51 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	template="/WEB-INF/templates/templatelogin.xhtml">
+
+
+
+	<ui:define name="content">
+		<div class="home-div">
+			<div id="content" class="home">
+				<div class="section-container">
+					<h:form id="formLogin" prependId="false">
+						<p:panel header="Erreur connexion"
+							styleClass="referentiel_form_login">
+							<p:growl id="growl" sticky="true" />
+							<p:spacer height="5"></p:spacer>
+							<p:panelGrid styleClass="ui-panelgrid-noborder"
+								style="width:100%;align:auto;" columns="1">
+
+
+								<div class="alert alert-error">
+									Etat HTTP 403 - Access is denied.
+									<p:outputLabel
+										value="#{SPRING_SECURITY_LAST_EXCEPTION.message}" />
+								</div>
+								
+								
+							</p:panelGrid>
+
+							<p:spacer height="5"></p:spacer>
+
+							<f:facet name="footer">
+								<p:toolbarGroup align="lefet">
+									<p:commandButton type="submit" id="login"
+										styleClass="btn btn-primary" action="/login.xhtml?faces-redirect=true"
+										value="Ok" icon="ui-icon-check" ajax="false" />
+
+								</p:toolbarGroup>
+							</f:facet>
+						</p:panel>
+
+					</h:form>
+				</div>
+			</div>
+		</div>
+	</ui:define>
+</ui:composition>

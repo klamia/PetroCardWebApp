@@ -1,0 +1,537 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags"
+    template="/WEB-INF/templates/templateprincipale.xhtml">
+	
+<ui:define name="sidemenu" >
+                
+                <h:form>
+                <div></div>      
+                        
+                 </h:form>  
+</ui:define>
+
+
+<ui:define name="content">
+
+  <p:tabView id="tabcomview" dynamic="true" style="width:auto; height:99%; margin:0px; padding:0px;" >
+   
+  <p:tab title="Saisir Nouvelle Commande" >
+  
+    <h:form id="ListeCommande">
+         
+            <p:growl id="growl" showDetail="true" sticky="false"  />
+            <p:dataTable var="demandeacquisition" value="#{demandeacquisitionbean.listdemandeNonTraite}" id="table" widgetVar="DemandeTable" styleClass ="table4"
+                         emptyMessage="Demande non trouvé" paginator="true" rows="5" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" scrollable="true" scrollWidth="800">
+ 
+                <f:facet name="header">
+                <p Class="tableheader"> <span>Liste Des Demandes Acquisition Carte </span></p>
+                    <p:outputPanel>
+                        <h:outputText value="Recherche:" />
+                        <p:inputText id="globalFilter" onkeyup="DemandeTable.filter()" style="width:80px;" />
+                    </p:outputPanel>
+                </f:facet>
+
+                
+                <p:column headerText="Code Demande" id="demandeId" filterBy="#{demandeacquisition.demandeacquisitionid}" filterMatchMode="exact" >
+                    <h:outputText value="#{demandeacquisition.demandeacquisitionid}" />
+                </p:column>
+                <p:column headerText="Num Bon Commande" id="numBC"  >
+                    <h:outputText value="#{demandeacquisition.numbc}" />
+                </p:column>
+                
+                <p:column headerText="Date Demande" id="DateDemande"  >
+                    <h:outputText value="#{demandeacquisition.datedemac}" />
+                </p:column>
+                
+                <p:column headerText="Demande Traitée" id="DemandeTraitée"  >
+                    <h:outputText value="#{demandeacquisition.traite}" />
+                </p:column>
+                
+                <p:column  style="width:12%">
+                    <p:commandButton id="Ajouter"  value="Ajouter Commande"  update=":tabcomview:FormulaireSaisieCommande:display" icon="ui-icon-arrowrefresh-1-w"    
+                    action="#{commandeBean.addCommande(demandeacquisition)}"   oncomplete="comAjout.show()" title="Ajouter"/>
+                </p:column>
+                
+                  
+            </p:dataTable>
+        
+        </h:form>
+            
+            <h:form id="FormulaireSaisieCommande">
+			<p:dialog id="editCO" header="Formulaire Saisie Commande"
+				widgetVar="comAjout" resizable="false">
+
+				<p:growl id="growl" showDetail="true" sticky="false" life="10000" />
+				<h:panelGrid id="display" columns="2" cellpadding="5">
+          	
+					<h:outputLabel for="numerodemandeacquisition" title="Numero Demande Acquisition" value="Numero Demande Acquisition"
+						style="color: #336699; font-weight:bold;" />
+					<p:inputText value="#{commandeBean.commande.demandeAcquisition.demandeacquisitionid}" id="numerodemandeacquisition" label="numerodemandeacquisition" />
+							
+					<h:outputLabel for="date" title="DateCommande" value="Date Commande"
+						style="color: #336699; font-weight:bold;" />
+					<p:calendar widgetVar="myCalendar"
+						value="#{commandeBean.commande.datecmd}"
+						pattern="dd/MM/yyyy" label="date" required="true" />
+
+<script type="text/javascript">
+     jQuery(document).ready(function(){
+        myCalendar.jqEl.datepicker("option", "maxDate", +0);//set maxDate to today
+     });     
+</script>						
+						</h:panelGrid>
+						
+					<f:facet name="footer">
+						<p:commandButton value="Enregistrer" update=":tabcomview:ListeCommande:table, growl"
+							action="#{commandeBean.ajoutCommande}"
+							oncomplete="comAjout.hide()" />
+						
+						<p:spacer width="50" height="10" />
+						<p:commandButton value="Annuler" update="display" process="@this"
+							actionListener="#{commandeBean.reset}" />
+					</f:facet>
+				
+
+			</p:dialog>
+
+             </h:form>
+</p:tab>
+<p:tab title="MAJ Etat Commande" >
+<h:form id="ListeCommande2">
+         
+            <p:growl id="growl" showDetail="true" sticky="false"  />
+            <p:dataTable var="commande" value="#{commandeBean.listCommandeEncours}" id="table2" widgetVar="CommandeTable" styleClass ="table4"
+                         emptyMessage="Commande non trouvé" paginator="true" rows="7" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" >
+ 
+                <f:facet name="header">
+                <p Class="tableheader"> <span>Liste Commande En Cours</span></p>
+                    <p:outputPanel>
+                        <h:outputText value="Recherche:" />
+                        <p:inputText id="globalFilter" onkeyup="CommandeTable.filter()" style="width:80px" />
+                    </p:outputPanel>
+                </f:facet>
+ 
+              <p:column headerText="Code Commande" id="commandeId" filterBy="#{commande.commandeid}" filterMatchMode="exact" >
+                    <h:outputText value="#{commande.commandeid}" />
+                </p:column>
+                <p:column headerText="Etat Commande" id="etatCommande"  >
+                    <h:outputText value="#{commande.etat}" />
+                </p:column>
+                
+                <p:column style="width:8%">
+                    <p:commandButton id="MAJEtat" value="MAJEtat"  update=":tabcomview:Actualise:displaye"  action="#{commandeBean.editCommandeEncours(commande)}" oncomplete="commandeValid.show()" title="Valider"/>
+                </p:column>
+                
+            </p:dataTable>
+        </h:form>
+        
+        <h:form id="Actualise">
+               
+            <p:dialog header="MAJ Etat Commande" widgetVar="commandeValid" resizable="false" id="validCom"  >
+                <p:growl id="growl" showDetail="true" sticky="false" />
+                <h:panelGrid id="displaye" columns="2" cellpadding="4" style="margin:0 auto;">
+ 
+                    <f:facet name="header">
+                       
+                    </f:facet>
+ 
+ 
+                    <h:outputLabel for="etat" title="EtatCommande" value="Etat Commande:" style="color: black; font-size:13px; font-weight:bold;" /> 
+                    <p:selectOneMenu id="etat"
+                        value="#{commandeBean.editCommande.etat}"
+                        style="width:200px; ">
+                        <f:selectItem itemLabel="--Select--" itemValue="none" />
+                        <f:selectItem itemLabel="Valide" itemValue="Valide" />
+                        <f:selectItem itemLabel="Rejete" itemValue="Rejete"/>
+                       <f:ajax event="change" execute="@this" render="perfbyselection" />
+                    </p:selectOneMenu>
+                  
+                  <h:panelGrid id="perfbyselection" columns="2" cellpadding="4" >
+                     <h:outputLabel for="motif" title="MotifRejet" value="Motif Rejet:" style="color: black; font-size:13px; font-weight:bold;" rendered="#{commandeBean.editCommande.etat eq 'Rejete'}"/>
+                    <p:inputTextarea id="motif"  value="#{commandeBean.editCommande.motif_rejet}" style="width:300px; " rows="6" cols="33" rendered="#{commandeBean.editCommande.etat eq 'Rejete'}" /> 
+                  </h:panelGrid>
+                   </h:panelGrid>
+                
+                <p:separator/>
+                <p:commandButton value="Enregistrer" update=":tabcomview:ListeCommande2:table2 ,growl" action="#{commandeBean.updateCommandeEncours}" oncomplete="commandeValid.hide()"/>
+            </p:dialog>
+         </h:form>
+         
+</p:tab>
+
+<p:tab title="Générer Fichier Commande" >
+
+<h:form id="FichierCommandeValidees">
+           
+            <p:dataTable  styleClass ="table4"  var="porteur" value="#{porteurBean.listPorteurCdeValidees}" id="tab" widgetVar="CommandeTable" 
+                         paginator="true" rows="10" >
+
+                <f:facet name="header">
+                 <p Class="tableheader"> <span>Liste Commande Cartes</span></p>
+                  <h:panelGrid columns="2">  
+    <p:panel header="Exporter Liste en Document">  
+        <h:commandLink>  
+            <p:graphicImage value="/images/excel.png" />  
+            <p:dataExporter type="xls" target="tab" fileName="ListeCommandeValidées"/>  
+        </h:commandLink>  
+  
+        <h:commandLink>  
+            <p:graphicImage value="/images/pdf.png" />  
+            <p:dataExporter type="pdf" target="tab" fileName="ListeCommandeValidées" preProcessor="#{commandeBean.preProcessPDFCde}"/>  
+        </h:commandLink>
+        
+         </p:panel>
+    <p:panel header="Envoyer Liste exportée par email">  
+       <p:commandButton   value="Email" icon="ui-icon-extlink" actionListener="#{dialogBean.emailDialog}" />  
+          
+    </p:panel>
+    
+  </h:panelGrid> 
+  
+                </f:facet>
+ 
+              <p:column styleClass="columntext" filterBy="#{porteur.demandeacquisition.commande.commandeid}" filterMatchMode="exact">
+              <f:facet name="header" >
+              <h:outputText value="Code Commande" />
+              </f:facet>
+                    <h:outputText value="#{porteur.demandeacquisition.commande.commandeid}" />
+              </p:column>
+                
+              <p:column styleClass="columntext" filterBy="#{porteur.demandeacquisition.client.raisonsocial}" filterMatchMode="exact">
+              <f:facet name="header" >
+              <h:outputText value="Code Client" />
+              </f:facet>
+                    <h:outputText value="#{porteur.demandeacquisition.client.raisonsocial}" />
+              </p:column>
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Etat Commande" />
+              </f:facet>
+                    <h:outputText value="#{porteur.demandeacquisition.commande.etat}" />
+              </p:column>
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Code Porteur" />
+              </f:facet>
+                    <h:outputText value="#{porteur.porteurid}" />
+              </p:column>
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+               <h:outputText value="Nom Porteur" />
+              </f:facet>
+                    <h:outputText value="#{porteur.nomporteur}" />
+              </p:column>
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+               <h:outputText value="Nom Embossé" />
+              </f:facet>
+                    <h:outputText value="#{porteur.nomembosse}" />
+              </p:column>
+             
+            </p:dataTable>
+        
+        
+  
+  
+  </h:form>      
+ 
+</p:tab>
+
+<p:tab title="Enregistrer Envoi Commande" >
+<h:form id="ListeCommande3">
+         
+            <p:growl id="growl" showDetail="true" sticky="false"  />
+            <p:dataTable var="commande" value="#{commandeBean.listCommandeNonEnvoyees}" id="table3" widgetVar="CommandeTable" styleClass ="table4"
+                         emptyMessage="Commande non trouvé" paginator="true" rows="7" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" >
+ 
+                <f:facet name="header">
+                <p Class="tableheader"> <span>Liste Commande Validées</span></p>
+                    <p:outputPanel>
+                        <h:outputText value="Recherche:" />
+                        <p:inputText id="globalFilter" onkeyup="CommandeTable.filter()" style="width:80px" />
+                    </p:outputPanel>
+                </f:facet>
+ 
+              <p:column headerText="Code Commande" id="commandeId" filterBy="#{commande.commandeid}" filterMatchMode="exact" >
+                    <h:outputText value="#{commande.commandeid}" />
+                </p:column>
+                <p:column headerText="Envoi Commande" id="envoiCommande"  >
+                    <h:outputText value="#{commande.envoi}" />
+                </p:column>
+                
+                <p:column style="width:8%">
+                    <p:commandButton id="Editer" value="Enregistrer Envoi"  update=":tabcomview:Actualise2:displaye2"  action="#{commandeBean.editCommandeNonEnvoyees(commande)}" oncomplete="commandeEtat.show()" title="Editer"/>
+                </p:column>
+                
+            </p:dataTable>
+        </h:form>
+        
+        <h:form id="Actualise2">
+               
+            <p:dialog header="Enregistrer Envoi Commande" widgetVar="commandeEtat" resizable="false" id="editCom"  >
+                <p:growl id="growl" showDetail="true" sticky="false" />
+                <h:panelGrid id="displaye2" columns="2" cellpadding="4" style="margin:0 auto;">
+ 
+                    <f:facet name="header">
+                       
+                    </f:facet>
+ 
+ 
+                    <h:outputLabel for="envoi" title="EnvoiCommande" value="Envoi Commande:" style="color: black; font-size:13px; font-weight:bold;" /> 
+                    <p:selectOneMenu id="envoi"
+                        value="#{commandeBean.editCommande.envoi}"
+                        style="width:200px; ">
+                        <f:selectItem itemLabel="--Select--" itemValue="none" />
+                        <f:selectItem itemLabel="Oui" itemValue="Oui" />
+                       
+                       <f:ajax event="change" execute="@this" render="perfbyselection2" />
+                    </p:selectOneMenu>
+                  
+                  <h:panelGrid id="perfbyselection2" columns="2" cellpadding="4" >
+                     <h:outputLabel for="datenvoi" title="DateEnvoi" value="Date Envoi:" style="color: black; font-size:13px; font-weight:bold;" rendered="#{commandeBean.editCommande.envoi eq 'Oui'}"/>
+                     <p:calendar widgetVar="myCalendar"  value="#{commandeBean.editCommande.datenvoi}" pattern="dd/MM/yyyy"  
+                    rendered="#{commandeBean.editCommande.envoi eq 'Oui'}" />
+                 <script type="text/javascript">
+     jQuery(document).ready(function(){
+        myCalendar.jqEl.datepicker("option", "maxDate", +0);//set maxDate to today
+     });     
+</script>  
+                    
+                     
+                 </h:panelGrid>
+                   </h:panelGrid>
+                
+                <p:separator/>
+                <p:commandButton value="Enregistrer" update=":tabcomview:ListeCommande3:table3, :tabcomview:ListeCommandeEnvoye:table5 ,growl" action="#{commandeBean.updateCommandeNonEnvoyees}" oncomplete="commandeEtat.hide()"/>
+            </p:dialog>
+         </h:form>
+     
+</p:tab>
+<p:tab title="Saisir Nouvelle Carte" >
+
+ <h:form id="ListeCommandeEnvoye">
+         
+            <p:growl id="growl" showDetail="true" sticky="false"  />
+            <p:dataTable var="commande" value="#{commandeBean.listCommandeEnvoyees}" id="table5" widgetVar="CommandeEnvTable" styleClass ="table4"
+                         emptyMessage="Commande non trouvé" paginator="true" rows="5" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" scrollable="true" scrollWidth="800">
+ 
+                <f:facet name="header">
+                <p Class="tableheader"> <span>Liste Des Commandes Envoyées </span></p>
+                   
+                </f:facet>
+
+              
+                 <p:column styleClass="columntext" filterBy="#{commande.commandeid}" filterMatchMode="exact" >
+              <f:facet name="header" >
+              <h:outputText value="Code Commande" />
+              </f:facet>
+                    <h:outputText value="#{commande.commandeid}" />
+              </p:column>
+                
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Date Commande" />
+              </f:facet>
+                    <h:outputText value="#{commande.datecmd}" />
+              </p:column>
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Envoi Commande" />
+              </f:facet>
+                    <h:outputText value="#{commande.envoi}" />
+              </p:column>
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Type Carte" />
+              </f:facet>
+                    <h:outputText value="#{commande.demandeAcquisition.typeCarte.intitule}" />
+              </p:column>
+     
+             <p:column  style="width:10%">
+                    <p:commandButton id="ajoutCarte"  value="Ajouter Carte"  icon="ui-icon-arrowrefresh-1-w" update=":tabcomview:FormulaireSaisieCarte:displayCA" 
+                     oncomplete="cartAjout.show()"  action="#{carteBean.addCarte(commande)}"  title="Ajouter"/>
+                </p:column>
+                
+            </p:dataTable>
+        
+        </h:form>
+        
+        <h:form id="FormulaireSaisieCarte">
+			<p:dialog id="editCART" header="Formulaire Saisie Carte"
+				widgetVar="cartAjout" resizable="false">
+
+				<p:growl id="growl" showDetail="true" sticky="false" life="3000" />
+				<h:panelGrid id="displayCA" columns="2" cellpadding="5">
+          	
+					<h:outputLabel for="numeroComande" title="NumeroComande" value="Numero Comande"
+											style="color: #336699; font-weight:bold;" />
+					<p:inputText value="#{carteBean.carte.commande.commandeid}" id="numeroComande" label="numeroComande" />
+
+                   <h:outputLabel for="numeroCarte" title="NumeroCarte" value="NumeroCarte"
+											style="color: #336699; font-weight:bold;" />
+					<p:inputText value="#{carteBean.carte.numcarte}" id="numeroCarte" label="numeroCarte" />
+                   
+                    <h:outputLabel for="typecarte" title="TypeCarte" value="Type Carte"
+					style="color: #336699; font-weight:bold;" />
+					<p:inputText value="#{carteBean.carte.commande.demandeAcquisition.typeCarte.intitule}" id="typecarte" label="typecarte" />
+					
+					<h:outputLabel for="dateexp" title="DateExpiration" value="Date Expiration"
+											style="color: #336699; font-weight:bold;" />
+					<p:calendar id= "dateexp" widgetVar="myCalendar"
+						value="#{carteBean.carte.date_exp}" 
+						pattern="dd/MM/yyyy" label="dateexp" required="true" />	
+															
+					
+					<h:outputText style="color: #336699; font-weight:bold;"
+						value="Nom Proprietaire:" />
+					<p:selectOneMenu value="#{carteBean.carte.porteur}"  converter="#{porteurConverter}"
+					 panelStyle="width:150px" effect="fade"
+					 style="width:160px" filter="true"
+						filterMatchMode="startsWith">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						<f:selectItems value="#{autoCompleteBean.selectItemIdent}"/>
+					</p:selectOneMenu>
+					
+					<h:outputText style="color: #336699; font-weight:bold;"
+						value="Nom Embossé:" />
+					<p:selectOneMenu value="#{carteBean.carte.porteur}" converter="#{porteurConverter}"
+					 panelStyle="width:150px" effect="fade"
+					 style="width:160px" filter="true"
+						filterMatchMode="startsWith">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						<f:selectItems value="#{autoCompleteBean.selectItemIdent2}"/>
+					</p:selectOneMenu>
+		
+		<script type="text/javascript">
+     jQuery(document).ready(function(){
+    	myCalendar.jqEl.datepicker("option", "minDate", +0);//set minDate to today 
+        myCalendar.jqEl.datepicker("option", "maxDate", +730);
+     });     
+        </script>
+		
+						</h:panelGrid>
+						<br/>
+						<br/>
+					<f:facet name="footer">
+						<p:commandButton value="Enregistrer" update="growl"
+							action="#{carteBean.ajoutCarte}"
+							oncomplete="cartAjout.hide()" />
+						
+						<p:spacer width="50" height="10" />
+						<p:commandButton value="Effacer" update="displayCA" process="@none"
+							actionListener="#{carteBean.reset}" />
+					</f:facet>
+				
+
+			</p:dialog>
+
+             </h:form>
+          
+</p:tab>
+
+<p:tab title="Consulter Liste Commande" >
+
+<p:tabView id="tabcomview2" dynamic="true" style="width:100%; height:570px; margin:0px; ">
+<p:tab title="Liste Commande En cours" >
+
+<h:form id="affichageCommandeEncours">
+            
+            <p:dataTable  styleClass ="table4"  var="commande" value="#{commandeBean.listCommandeEncours}" id="tab" widgetVar="CommandeTable" 
+                         paginator="true" rows="10" >
+
+                <f:facet name="header">
+                 <p Class="tableheader"> <span>Liste Commande Encours</span></p>
+                  <h:panelGrid columns="2">  
+    <p:panel header="Exporter Liste en Document">  
+        <h:commandLink>  
+            <p:graphicImage value="/images/excel.png" />  
+            <p:dataExporter type="xls" target="tab" fileName="ListeCommandeEncours"/>  
+        </h:commandLink>  
+  
+        <h:commandLink>  
+            <p:graphicImage value="/images/pdf.png" />  
+            <p:dataExporter type="pdf" target="tab" fileName="ListeCommandeEncours" preProcessor="#{commandeBean.preProcessPDFCdeEnCours}"/>  
+        </h:commandLink>  
+          
+    </p:panel>
+    
+                 </h:panelGrid> 
+                  
+                </f:facet>
+ 
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Code Commande" />
+              </f:facet>
+                    <h:outputText value="#{commande.commandeid}" />
+              </p:column>
+                
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Date Commande" />
+              </f:facet>
+                    <h:outputText value="#{commande.datecmd}" />
+              </p:column>
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Etat Commande" />
+              </f:facet>
+                    <h:outputText value="#{commande.etat}" />
+              </p:column>
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Code Demande Acquisition" />
+              </f:facet>
+                    <h:outputText value="#{commande.demandeAcquisition.demandeacquisitionid}" />
+              </p:column>
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+               <h:outputText value="Client" />
+              </f:facet>
+                    <h:outputText value="#{commande.demandeAcquisition.client.raisonsocial}" />
+              </p:column>
+             
+            </p:dataTable>
+        
+        
+   
+        
+ </h:form>
+
+</p:tab>
+
+
+<p:tab title="Liste Commande Validees" >
+             
+</p:tab>
+<p:tab title="Liste Commande Rejetes" >
+</p:tab>
+<p:tab title="Liste Commande Envoyees" >
+</p:tab>
+</p:tabView>
+</p:tab>
+</p:tabView>
+
+
+</ui:define>
+
+
+</ui:composition>

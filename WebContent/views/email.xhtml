@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title>Envoi mail</title>
+</h:head>
+
+
+<h:body>
+<h:form id="sendEmail" enctype="multipart/form-data">
+
+<h:panelGrid columns="2">
+                
+                To:
+                <h:panelGroup>
+                    <h:inputText size="15" id="name"
+                                 value="#{emailBean.recipient}"
+                                 required="true"
+                                 requiredMessage="Required"/>
+                    <h:message for="name" style="color:red"/>
+                </h:panelGroup>
+                
+                Subject:
+                <h:panelGroup>
+                    <h:inputText size="30" id="subject"
+                                 value="#{emailBean.subject}"
+                                 required="true"
+                                 requiredMessage="Required"/>
+                    <h:message for="subject" style="color:red"/>
+                </h:panelGroup>
+                
+                Message:
+                <h:panelGroup>
+                    <h:inputTextarea cols="45" rows="15" id="message"
+                                     value="#{emailBean.message}"
+                                     required="true"
+                                     requiredMessage="Required"/>
+                    <h:message for="message" style="color:red"/>
+                </h:panelGroup>
+                
+                Attachment:
+                
+                <p:fileUpload fileUploadListener="#{emailBean.handleFileUpload}" mode="advanced" dragDropSupport="false"  
+                  update="messages" sizeLimit="100000" fileLimit="3" allowTypes="/(\.|\/)(gif|jpe?g|png)$/" /> 
+                
+                <p:growl id="messages" showDetail="true"/> 
+                
+                <h:commandButton value="Envoyer" action="#{emailBean.send()}"/>
+                <h:outputText value="#{emailBean.statusMessage}" style="color:red"/>
+                
+            </h:panelGrid>
+        </h:form>
+    </h:body>
+</html>

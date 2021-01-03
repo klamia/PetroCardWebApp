@@ -1,0 +1,47 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	template="/WEB-INF/templates/templatelogin.xhtml">
+
+	
+	<ui:define name="content">
+		<p:spacer height="20px"></p:spacer>
+		
+
+			<h:form>
+
+					<p:fieldset
+						legend="Exception:#{requestScope['javax.servlet.error.status_code']}">
+						<h:panelGrid columns="2" width="100%">
+
+							<h:outputText value="#{refMessage_fr.exception_httpCode} : " />
+
+							<h:outputText
+								value="#{requestScope['javax.servlet.error.status_code']}" />
+
+							<h:outputText value="#{refMessage_fr.exception_message} : " />
+
+							<h:outputText
+								value="#{requestScope['javax.servlet.error.exception']}" />
+
+							<h:outputText value="#{refMessage_fr.exception_requestUri} : " />
+
+							<h:outputText
+								value="#{requestScope['javax.servlet.error.request_uri']}" />
+
+							<h:outputText value="#{refMessage_fr.exception_servletName} : " />
+
+							<h:outputText
+								value="#{requestScope['javax.servlet.error.servlet_name']}" />
+
+						</h:panelGrid>
+					</p:fieldset>
+			
+			</h:form>
+	
+	</ui:define>
+</ui:composition>

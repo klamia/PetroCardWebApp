@@ -1,0 +1,584 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags"
+    template="/WEB-INF/templates/templateprincipale.xhtml">
+	
+<ui:define name="sidemenu" >
+                
+                <h:form>
+                <div></div>      
+                        
+                 </h:form>  
+</ui:define>
+
+
+<ui:define name="content">
+<p:tabView id="tabremplview" dynamic="true" style="width:auto; height:99%; margin:0px; padding:0px;" >
+<p:tab title="Gestion Demande Remplacement Carte" >
+<h:form id="AjoutDR">
+           <p:commandButton value="Ajouter une Demande" style="margin-top:20px; " icon="ui-icon-adds" 
+           action="#{remplacementBean.addDemandeRemplacement}"  oncomplete="demRAjout.show()"/> 
+        </h:form>
+     
+<h:form id="ListeDemandeR">
+         
+            <p:growl id="growl" showDetail="true" sticky="false"  />
+            <p:dataTable var="demanderemplacement" value="#{remplacementBean.listDemandeRemplacement}" id="tableR" widgetVar="DemandeRTable" styleClass ="table2"  border="0" cellpadding="2" cellspacing="0"
+                         emptyMessage="Aucune demande a afficher" paginator="true" rows="5" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" style="width:auto; font-size:13px;margin-left:50px !important; margin-top:10px !important;" >
+ 
+                <f:facet name="header">
+                <p Class="tableheader"> <span>Liste Des Demandes Remplacement Carte </span></p>
+                </f:facet>
+                
+                
+                <p:column  >
+                    <p:commandButton id="voirR" icon="ui-icon-search" 
+                     action="#{remplacementBean.voirDemandeRemplacement(demanderemplacement)}" update=":tabremplview:AperçuR:displayeeeR"  oncomplete="demApercuR.show()" title="Aperçu"/>
+                    <p:spacer width="5" height="5" />
+                    <p:commandButton id="editerR" rendered="#{sec:areAllGranted('ROLE_ADMIN')}"  update=":tabremplview:ActualiseR:displayeR" icon="ui-icon-arrowrefresh-1-w" 
+                    action="#{remplacementBean.editDemandeRemplacement(demanderemplacement)}" oncomplete="demEditR.show()" title="Editer"/>
+                    <p:spacer width="5" height="5" />
+                    <p:commandButton id="supprimerDR" rendered="#{sec:areAllGranted('ROLE_ADMIN')}" 
+                       icon="ui-icon-trash"  action="#{remplacementBean.supprimeDemandeRemplacement(demanderemplacement)}" oncomplete="confirmation.show()" title="Supprimer"/> 
+                </p:column>
+                
+                <p:column headerText="Num Demande" id="numDemR" filterBy="#{demanderemplacement.demanderemplacementid}" filterMatchMode="exact" >
+                    <h:outputText value="#{demanderemplacement.demanderemplacementid}" />
+                </p:column>
+                
+                <p:column headerText="Num Carte" id="numCarteR" filterBy="#{demanderemplacement.carte.numcarte}" filterMatchMode="exact" >
+                    <h:outputText value="#{demanderemplacement.carte.numcarte}" />
+                </p:column>
+                
+                <p:column headerText="Type Carte" id="typeCR" >
+                    <h:outputText value="#{demanderemplacement.carte.commande.demandeAcquisition.typeCarte.intitule}" />
+                </p:column>
+                
+                <p:column headerText="Date Demande" id="DateDemandeR"   >
+                    <h:outputText value="#{demanderemplacement.datedemr}" />
+                </p:column>
+                
+                <p:column headerText="Client" id="clientR"  >
+                    <h:outputText value="#{demanderemplacement.carte.commande.demandeAcquisition.client.raisonsocial}" />
+                </p:column>
+               
+                
+               <p:column headerText="Motif Remplacement" id="motifr"  >
+                    <h:outputText value="#{demanderemplacement.motifremp}" />
+                </p:column> 
+                
+                <p:column headerText="Nom Utilisateur" id="utilisateurname"  >
+                    <h:outputText value="#{demanderemplacement.user.nom}" />
+                </p:column> 
+                
+                <p:column headerText="Prenom Utilisateur" id="utilisateursurname"  >
+                    <h:outputText value="#{demanderemplacement.user.prenom}" />
+                </p:column> 
+ 
+                </p:dataTable>
+</h:form>
+<h:form id="SupprimerR">
+           
+                <p:growl id="growl" showDetail="true" sticky="false" />
+                <p:confirmDialog  message="Voulez vous supprimer cette demande?" global="true"
+                 header="Confirmation de Suppression" severity="alert" widgetVar="confirmation" resizable="false" id="suprDR">
+                 <p:commandButton value="OK" icon="ui-icon-check" update=":tabremplview:ListeDemandeR:tableR, growl"  
+                 action="#{remplacementBean.deleteDemandeRemplacement}"  styleClass="ui-confirmdialog-yes" oncomplete="confirmation.hide()"/>
+                 <p:commandButton value="Annuler" icon="ui-icon-close" onclick="confirmation.hide()" type="button" />
+                 </p:confirmDialog>
+                 
+</h:form>
+
+<h:form id="FormulaireDemandeRemplacement">
+			<p:dialog id="editR" header="Formulaire Demande Remplacement Carte "
+				widgetVar="demRAjout" resizable="false">
+
+				<p:growl id="growl" showDetail="true" sticky="false" life="10000" />
+				<h:panelGrid id="displayR" columns="2" cellpadding="5">
+				
+				
+				<h:outputText style="color: #336699; font-weight:bold;"
+						value="Numero Carte:*" />
+					<p:selectOneMenu value="#{remplacementBean.demanderemplacement.carte}" converter="#{carteConverter}"
+					 panelStyle="width:150px" effect="fade"
+					 style="width:160px" filter="true"
+						filterMatchMode="startsWith">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						
+						<f:selectItems value="#{autoCompleteBean.selectItemCarte}"/>
+						 
+					</p:selectOneMenu>
+
+					<h:outputLabel for="date" title="DateDemande" value="Date Demande Remplacement:* "
+						style="color: #336699; font-weight:bold;" />
+					<p:calendar widgetVar="myCalendar"
+						value="#{remplacementBean.demanderemplacement.datedemr}"
+						pattern="dd/MM/yyyy" label="date" required="true" />
+
+
+                       <h:outputLabel for="motifremp" title="MotifRemplacement"
+						value="Motif Remplacement:*"
+						style="color: #336699; font-weight:bold;" />
+                    <p:inputTextarea id="motifremp"  value="#{remplacementBean.demanderemplacement.motifremp}" style="width:300px; " 
+                    rows="6" cols="33" required="true" /> 
+
+
+                     <h:outputText style="color: #336699; font-weight:bold;"
+						value="User:" />
+					<p:selectOneMenu value="#{remplacementBean.demanderemplacement.user}" 
+					 panelStyle="width:150px" effect="fade"
+					 style="width:160px" filter="true"
+						filterMatchMode="startsWith">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						
+						<f:selectItems value=""/>
+						 
+					</p:selectOneMenu>
+
+
+                     <script type="text/javascript">
+                         jQuery(document).ready(function(){
+                         myCalendar.jqEl.datepicker("option", "maxDate", +0);//set maxDate to today
+                          });     
+                             </script>
+                    
+                  </h:panelGrid>
+                 <br/>
+                   <br/>
+                   
+					<f:facet name="footer">
+						<p:commandButton value="Enregistrer" update=":tabremplview:ListeDemandeR:tableR, growl"
+							action="#{remplacementBean.ajoutDemandeRemplacement}"
+							oncomplete="demRAjout.hide()" />
+						<p:spacer width="50" height="10" />
+						
+						<p:commandButton value="Annuler" update="editR" process="@none"
+							actionListener="#{remplacementBean.reset}" />
+					</f:facet>
+				
+
+			</p:dialog>
+</h:form>
+<h:form id="ActualiseR">
+            <p:dialog header="Modification Demande Remplacement" widgetVar="demEditR" resizable="false" id="editDemR">
+                <p:growl id="growl" showDetail="true" sticky="false" />
+                <h:panelGrid id="displayeR" columns="2" cellpadding="4" style="margin:0 auto;">
+ 
+                    <f:facet name="header">
+                        
+                    </f:facet>
+                    
+                    <h:outputText style="color: #336699; font-weight:bold;"
+						value="Numero Carte:*" />
+					<p:selectOneMenu value="#{remplacementBean.editedDemandeRemp.carte}" converter="#{carteConverter}"
+					 panelStyle="width:150px" effect="fade"
+					 style="width:160px" filter="true"
+						filterMatchMode="startsWith">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						
+						<f:selectItems value="#{autoCompleteBean.selectItemCarte}"/>
+						 
+					</p:selectOneMenu>
+
+					<h:outputLabel for="date" title="DateDemande" value="Date Demande Remplacement:* "
+						style="color: #336699; font-weight:bold;" />
+					<p:calendar widgetVar="myCalendar"
+						value="#{remplacementBean.editedDemandeRemp.datedemr}"
+						pattern="dd/MM/yyyy" label="date" required="true" />
+
+
+
+                       <h:outputLabel for="motifremp" title="MotifRemplacement"
+						value="Motif Blocage:*"
+						style="color: #336699; font-weight:bold;" />
+                    <p:inputTextarea id="motifremp"  value="#{remplacementBean.editedDemandeRemp.motifremp}" style="width:300px; " 
+                    rows="6" cols="33" required="true" /> 
+
+
+                     <h:outputText style="color: #336699; font-weight:bold;"
+						value="User:" />
+					<p:selectOneMenu value="#{remplacementBean.editedDemandeRemp.user}" 
+					 panelStyle="width:150px" effect="fade"
+					 style="width:160px" filter="true"
+						filterMatchMode="startsWith">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						
+						<f:selectItems value=""/>
+						 
+					</p:selectOneMenu>
+
+
+                     <script type="text/javascript">
+                         jQuery(document).ready(function(){
+                         myCalendar.jqEl.datepicker("option", "maxDate", +0);//set maxDate to today
+                          });     
+                             </script>
+                    
+                  </h:panelGrid>
+                  
+				
+                     <br/>
+                      <br/>
+                   
+					<f:facet name="footer">
+						<p:commandButton value="Enregistrer" update=":tabremplview:ListeDemandeR:tableR, growl"
+							action="#{remplacementBean.updateDemandeRemplacement}"
+							oncomplete="demEditR.hide()" />
+						<p:spacer width="50" height="10" />
+						
+						<p:commandButton value="Annuler" update="editDemR" process="@none"
+							actionListener="#{remplacementBean.reset}" />
+					</f:facet>
+				
+
+			</p:dialog>
+</h:form>
+<h:form id="AperçuR">
+            <p:dialog header="Aperçu Demande Remplacement" widgetVar="demApercuR" resizable="false" id="apercuDemR">
+                
+                <h:panelGrid id="displayeeeR" columns="2" cellpadding="8" style="margin:0 auto;">
+ 
+                    <f:facet name="header"> 
+                    </f:facet>
+                    
+                    <h:outputLabel for="numDemDR" title="NumeroDemande"
+						value="Numero Demande Remplacement:"
+						style="color: black; font-weight:bold;" />
+					<h:outputText
+						value="#{remplacementBean.demandeRempEnCours.demanderemplacementid}"
+						id="numDemDR" style="color: #336699; font-weight:bold;" />
+					
+					<h:outputLabel for="dateDR" title="DateDemande" value="Date Demande:"
+						style="color: black; font-weight:bold;" />
+					<h:outputText
+						value="#{remplacementBean.demandeRempEnCours.datedemr}"
+						id="dateDR" style="color: #336699; font-weight:bold;" /> 
+					
+                    <h:outputLabel for="numCarteDR" title="NumeroCarte"
+						value="Numero Carte:"
+						style="color: black; font-weight:bold;" />
+					<h:outputText
+						value="#{remplacementBean.demandeRempEnCours.carte.numcarte}"
+						id="numCarteDR" style="color: #336699; font-weight:bold;" />
+						
+		
+                    <h:outputLabel for="typecarteDR" title="TypeCarte" style="color: black; font-weight:bold;"
+						value="Type Carte:" />
+					<h:outputText value="#{remplacementBean.demandeRempEnCours.carte.commande.demandeAcquisition.typeCarte.intitule}" id="typecarteDB"  
+					style="color: #336699; font-weight:bold;" />
+	
+                    	
+						
+					<h:outputLabel for="mtremp" title="MotifRemplacement" value="Motif Remplacement"
+						style="color: black; font-weight:bold;" />
+					<h:outputText
+						value="#{remplacementBean.demandeRempEnCours.motifremp}"
+						id="mtremp" style="color: #336699; font-weight:bold;" /> 		
+				 
+				 <h:outputLabel for="clientDR" title="Client" style="color: black; font-weight:bold;" value="Client:" /> 
+                    <h:outputText value="#{remplacementBean.demandeRempEnCours.carte.commande.demandeAcquisition.client.raisonsocial}" id="clientDR"  
+                    style="color: #336699; font-weight:bold;" />
+                    
+                    <h:outputLabel for="userDR" title="User" style="color: black; font-weight:bold;" value="User:" /> 
+                    <h:outputText value="#{remplacementBean.demandeRempEnCours.user.nom}" id="userDR"  
+                    style="color: #336699; font-weight:bold;" />
+                    
+                   <h:outputLabel for="userDR2" title="User" style="color: black; font-weight:bold;" value="User:" /> 
+                    <h:outputText value="#{remplacementBean.demandeRempEnCours.user.prenom}" id="userDR2"  
+                    style="color: #336699; font-weight:bold;" /> 
+				 
+                </h:panelGrid>
+                 
+                 </p:dialog>
+         </h:form>  
+             
+</p:tab>
+
+<p:tab title="Générer Fichier des cartes à remplacer" >       
+        
+ <h:form id="FichierDemandeRemplacement">
+           
+            <p:dataTable  styleClass ="table4"  var="demanderemplacement" value="#{remplacementBean.listDemandeRemplacement}" id="tab8" widgetVar="DemandeRTable" 
+                         paginator="true" rows="10" >
+
+                <f:facet name="header">
+                 <p Class="tableheader"> <span>Liste Des Demandes Remplacement Carte</span></p>
+                  <h:panelGrid columns="2">  
+    <p:panel header="Exporter Liste en Document">  
+        <h:commandLink>  
+            <p:graphicImage value="/images/excel.png" />  
+            <p:dataExporter type="xls" target="tab8" fileName="ListeDemandesRemplacementCarte"/>  
+        </h:commandLink>  
+  
+        <h:commandLink>  
+            <p:graphicImage value="/images/pdf.png" />  
+            <p:dataExporter type="pdf" target="tab8" fileName="ListeDemandesRemplacementCarte" preProcessor="#{remplacementBean.preProcessPDF}"/>  
+        </h:commandLink>
+        
+         </p:panel>
+    <p:panel header="Envoyer Liste exportée par email">  
+       <p:commandButton   value="Email" icon="ui-icon-extlink" actionListener="#{dialogBean.emailDialog}" />  
+          
+    </p:panel>
+    
+  </h:panelGrid> 
+  
+                </f:facet>
+ 
+              <p:column styleClass="columntext" filterBy="#{demanderemplacement.demanderemplacementid}" filterMatchMode="exact">
+              <f:facet name="header" >
+              <h:outputText value="Num Demande" />
+              </f:facet>
+                    <h:outputText value="#{demanderemplacement.demanderemplacementid}" />
+              </p:column>
+                
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Num carte" />
+              </f:facet>
+                    <h:outputText value="#{demanderemplacement.carte.numcarte}" />
+              </p:column>
+              
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Motif Remplacement" />
+              </f:facet>
+                    <h:outputText value="#{demanderemplacement.motifremp}" />
+              </p:column>
+             
+          
+            </p:dataTable>
+        
+      
+  </h:form>      
+</p:tab>       
+<p:tab title="MAJ Etat Carte" >
+<h:form id="majEtatCarteR">
+<p:growl id="growl" showDetail="true" sticky="false"  />
+            <p:dataTable var="demanderemplacement" value="#{remplacementBean.listDemandeRempNonTraite}" id="table13" widgetVar="EtatTable" styleClass ="table4"
+                         emptyMessage="Carte non trouvé" paginator="true" rows="7" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" >
+ 
+                <f:facet name="header">
+                <p Class="tableheader"> <span>Liste Cartes A Remplacer </span></p>
+                    <p:outputPanel>
+                        <h:outputText value="Recherche:" />
+                        <p:inputText id="globalFilter" onkeyup="EtatTable.filter()" style="width:80px" />
+                    </p:outputPanel>
+                </f:facet>
+ 
+              <p:column headerText="ID Carte" id="carteId" filterBy="#{demanderemplacement.carte.carteid}" filterMatchMode="exact" >
+                    <h:outputText value="#{demanderemplacement.carte.carteid}" />
+                </p:column>
+                
+                <p:column headerText="Numero Carte" id="numCarte3" filterBy="#{demanderemplacement.carte.numcarte}" filterMatchMode="exact" >
+                    <h:outputText value="#{demanderemplacement.carte.numcarte}" />
+                </p:column>
+                
+                <p:column headerText="Num Demande" id="numdem"  >
+                    <h:outputText value="#{demanderemplacement.demanderemplacementid}" />
+                </p:column>
+                
+               
+                
+                <p:column style="width:8%">
+                    <p:commandButton id="majEtatR" value="MAJ Etat"  update=":tabremplview:ActualiseRP:displayeRP"  action="#{etatCarteBean.addEtatCarteRemplace(demanderemplacement)}" 
+                    oncomplete="etatCarteRemp.show()" title="mettre a jours"/>
+                </p:column>
+                
+            </p:dataTable>
+        </h:form>
+        
+        <h:form id="ActualiseRP">
+               
+            <p:dialog header="MAJ Etat Carte" widgetVar="etatCarteRemp" resizable="false" id="majEtatRemp"  >
+                <p:growl id="growl" showDetail="true" sticky="false" />
+                <h:panelGrid id="displayeRP" columns="2" cellpadding="4" style="margin:0 auto;">
+ 
+                    <f:facet name="header">
+                       
+                    </f:facet>
+ 
+ 
+                    <h:outputLabel for="numCarte1" title="IDCarte"
+						value="ID Carte:"
+						style="color: #336699; font-weight:bold;" />
+					<p:inputText
+						value="#{etatCarteBean.etatcarteR.carte.carteid}"
+						id="numCarte1" required="true"/>
+										 
+                    <h:outputLabel for="etat1" title="EtatCarte" value="Etat Carte:" style="color: black; font-size:13px; font-weight:bold;" /> 
+                    <p:selectOneMenu id="etat1" value="#{etatCarteBean.etatcarteR.typeEtat}" converter="#{typeEtatConverter}"
+					 panelStyle="width:150px" effect="fade" required="true"
+					 style="width:160px" filter="true"
+						filterMatchMode="startsWith" >
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						<f:selectItems value="#{autoCompleteBean.selectItemTypeEtat}"/>
+					</p:selectOneMenu>
+
+                    <h:outputLabel for="date1" title="DateMAJ" value="Date MAJ"
+						style="color: #336699; font-weight:bold;" />
+					<p:calendar widgetVar="myCalendar"
+						value="#{etatCarteBean.etatcarteR.datetat}"
+						pattern="dd/MM/yyyy" label="date1" required="true" />
+
+                           <script type="text/javascript">
+                            jQuery(document).ready(function(){
+                             myCalendar.jqEl.datepicker("option", "maxDate", +0);//set maxDate to today
+                              });     
+                            </script>						
+                  
+                  </h:panelGrid>
+						
+					<f:facet name="footer">
+						<p:commandButton value="Enregistrer" update=":tabremplview:majEtatCarteR:table13, growl"
+							action="#{etatCarteBean.ajoutEtatCarteR}"
+							oncomplete="etatCarteRemp.hide()" />
+						
+					</f:facet>
+				
+
+			</p:dialog>
+         </h:form> 
+
+</p:tab> 
+
+<p:tab title="Consultation" >
+<p:tabView id="soustabRemplacementview" dynamic="true" style="width:100%; height:570px; margin:0px; " >
+<p:tab title="Consultation Liste carte à remplacer" >
+<h:form id="ConsultationListeCarteARemplace">
+  <p:dataTable  styleClass ="table4"  var="demanderemplacement" value="#{remplacementBean.listDemandeRempNonTraite}" id="tabR" widgetVar="EtatTable" 
+                         paginator="true" rows="10" >
+
+                <f:facet name="header">
+                 <p Class="tableheader"> <span>Liste Carte A Remplacer</span></p>
+                  <h:panelGrid columns="2">  
+    <p:panel header="Exporter Liste en Document">  
+        <h:commandLink>  
+            <p:graphicImage value="/images/excel.png" />  
+            <p:dataExporter type="xls" target="tabR" fileName="ListeCarteARemplace"/>  
+        </h:commandLink>  
+  
+        <h:commandLink>  
+            <p:graphicImage value="/images/pdf.png" />  
+            <p:dataExporter type="pdf" target="tabR" fileName="ListeCarteARemplace" preProcessor="#{remplacementBean.preProcessPDF}"/>  
+        </h:commandLink>  
+          
+    </p:panel>
+    
+                 </h:panelGrid> 
+                  
+                </f:facet>
+ 
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Numero Demande" />
+              </f:facet>
+                    <h:outputText value="#{demanderemplacement.demanderemplacementid}" />
+              </p:column>
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Date Demande" />
+              </f:facet>
+                    <h:outputText value="#{demanderemplacement.datedemr}" />
+              </p:column>
+              
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="motif Remplacement" />
+              </f:facet>
+                    <h:outputText value="#{demanderemplacement.motifremp}" />
+              </p:column>
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Numero Carte" />
+              </f:facet>
+                    <h:outputText value="#{demanderemplacement.carte.numcarte}" />
+              </p:column>
+                
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Type Carte" />
+              </f:facet>
+                    <h:outputText value="#{demanderemplacement.carte.commande.demandeAcquisition.typeCarte.intitule}" />
+              </p:column>
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Nom Porteur" />
+              </f:facet>
+                    <h:outputText value="#{demanderemplacement.carte.porteur.nomporteur}" />
+              </p:column>
+              
+            </p:dataTable>
+</h:form> 
+</p:tab>
+<p:tab title="Consultation Liste carte remplacée" >
+<h:form id="affichageCarteRempl">
+            
+            <p:dataTable  styleClass ="table4"  var="etatcarte" value="#{etatCarteBean.listetatCarteRemplace}" id="tabR2" widgetVar="EtatTable" 
+                         paginator="true" rows="10" >
+
+                <f:facet name="header">
+                 <p Class="tableheader"> <span>Liste Carte Remplacées</span></p>
+                  <h:panelGrid columns="2">  
+    <p:panel header="Exporter Liste en Document">  
+        <h:commandLink>  
+            <p:graphicImage value="/images/excel.png" />  
+            <p:dataExporter type="xls" target="tabR2" fileName="ListeCarteRemplace"/>  
+        </h:commandLink>  
+  
+        <h:commandLink>  
+            <p:graphicImage value="/images/pdf.png" />  
+            <p:dataExporter type="pdf" target="tabR2" fileName="ListeCarteRemplace" preProcessor="#{etatCarteBean.preProcessPDFCarteRemplace}"/>  
+        </h:commandLink>  
+          
+    </p:panel>
+    
+                 </h:panelGrid> 
+                  
+                </f:facet>
+ 
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Numero Carte" />
+              </f:facet>
+                    <h:outputText value="#{etatcarte.carte.carteid}" />
+              </p:column>
+                
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Etat Carte" />
+              </f:facet>
+                    <h:outputText value="#{etatcarte.typeEtat.intitule}" />
+              </p:column>
+              
+              <p:column styleClass="columntext">
+              <f:facet name="header" >
+              <h:outputText value="Date Remplacement" />
+              </f:facet>
+                    <h:outputText value="#{etatcarte.datetat}" />
+              </p:column>
+              
+            </p:dataTable>
+        
+        
+   
+        
+ </h:form>
+</p:tab>
+
+</p:tabView>
+</p:tab>       
+</p:tabView>
+</ui:define>
+</ui:composition>
